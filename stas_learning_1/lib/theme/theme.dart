@@ -6,7 +6,8 @@ final darkTheme = ThemeData(
           brightness: Brightness.dark,
         ),
         appBarTheme: AppBarTheme(
-            backgroundColor: ColorScheme.fromSeed(
+          elevation: 0,
+          backgroundColor: ColorScheme.fromSeed(
           seedColor: const Color.fromARGB(255, 93, 0, 255),
           brightness: Brightness.dark,
         ).inversePrimary),
