@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:stas_learning_1/features/crypto_coins_list/crypto_list.dart';
 
 void main() {
   runApp(const CryptoCurrencyTracker());
@@ -43,56 +43,6 @@ class CryptoCurrencyTracker extends StatelessWidget {
   }
 }
 
-class CryptoListScreen extends StatefulWidget {
-  const CryptoListScreen({super.key, required this.title});
-  final String title;
-
-  @override
-  State<CryptoListScreen> createState() => _CryptoListScreenState();
-}
-
-class _CryptoListScreenState extends State<CryptoListScreen> {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.title,
-          style: theme.textTheme.titleMedium,
-        ),
-      ),
-      body: ListView.separated(
-          separatorBuilder: (context, index) => const Divider(
-                thickness: 0.3,
-              ),
-          itemCount: 30,
-          itemBuilder: (context, i) {
-            const String coinName = 'BitCoin';
-            return ListTile(
-              leading: SvgPicture.asset(
-                "assets/svg/token.svg",
-                height: 35,
-                width: 35,
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              title: Text(
-                'BitCoin',
-                style: theme.textTheme.titleMedium,
-              ),
-              subtitle: Text(
-                "пошел нахуй",
-                style: theme.textTheme.labelSmall,
-              ),
-              onTap: () {
-                Navigator.of(context).pushNamed('/Coin', arguments: coinName);
-              },
-            );
-          }),
-    );
-  }
-}
-
 class CryptoCoinScreen extends StatefulWidget {
   const CryptoCoinScreen({
     super.key,
@@ -127,6 +77,22 @@ class _CryptoCoinScreenState extends State<CryptoCoinScreen> {
       appBar: AppBar(
         title: Text(coinName ?? '...'),
       ),
+      bottomNavigationBar: const BottomAppBar(
+        child: Text("sdf"),
+      ),
+      body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text("some text"),
+            ElevatedButton(
+                onPressed: () {
+                  log("tap");
+                },
+                child: const Text("tap chel"))
+          ],
+        ),
+      ]),
     );
   }
 }
