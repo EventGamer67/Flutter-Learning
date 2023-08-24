@@ -4,7 +4,7 @@ import 'package:stas_learning_1/theme/theme.dart';
 
 class CryptoCurrencyTracker extends StatelessWidget {
   const CryptoCurrencyTracker({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
