@@ -1,0 +1,1 @@
+export 'package:stas_learning_1/repositories/crypto_coins/models/crypto_coin_model.dart';
