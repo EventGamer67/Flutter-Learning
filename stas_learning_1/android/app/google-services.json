@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "704285730328",
+    "project_id": "flutter-a581b",
+    "storage_bucket": "flutter-a581b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:704285730328:android:9d158c271ed75d8748c56d",
+        "android_client_info": {
+          "package_name": "com.example.stas_learning_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "704285730328-8uflqkd2ab40k78dl2qhc1ed9cidguoq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1pvvA2J2flDbbqbHW6dPZFwhAp0ZVPNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "704285730328-8uflqkd2ab40k78dl2qhc1ed9cidguoq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "704285730328-gt04b1ooi9crg2p7gps8qp5fo4g2ajip.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.stasLearning1.RunnerTests"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
