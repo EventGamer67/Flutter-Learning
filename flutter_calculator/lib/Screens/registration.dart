@@ -59,16 +59,19 @@ class _RegistrationWindowState extends State<RegistrationWindow> {
                                   )
                                 ),
                                 style: TextStyle(
-                                  color: Colors.white
+                                  color: Colors.white,
+                                  fontSize: 16
                                 ),
                               ),
                               SizedBox(height: 30,),
                               TextField(
+                                obscureText: true,
                                 decoration: InputDecoration(
                                   contentPadding: EdgeInsetsDirectional.only(start: 10),
                                   hintText: " Пароль",
                                   hintStyle: TextStyle(
-                                    color: Color.fromRGBO(190, 194, 194, 1)
+                                    color: Color.fromRGBO(190, 194, 194, 1),
+                                    fontSize: 16
                                   )
                                 ),
                                 style: TextStyle(

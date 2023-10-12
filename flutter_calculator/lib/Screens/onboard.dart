@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_calculator/Screens/registration.dart';
 import 'package:flutter_calculator/repo/widgets/elevetedBtn.dart';
 
 class OnBoardWindow extends StatelessWidget {
@@ -55,9 +56,10 @@ class OnBoardWindow extends StatelessWidget {
                    textAlign: TextAlign.center,
                    ),
                 const SizedBox(height: 20,),
-                elevatedBtn(onTap: (){
-                  //nav
-                }, tittle: 'Войти в аккаунт',),
+                elevatedBtn(
+                  onTap: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => const RegistrationWindow())); }, 
+                  tittle: 'Войти в аккаунт',
+                ),
                 const SizedBox(height: 20,),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
