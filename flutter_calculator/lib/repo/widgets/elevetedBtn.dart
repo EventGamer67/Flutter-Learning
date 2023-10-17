@@ -30,7 +30,6 @@ class elevatedBtn extends StatelessWidget {
           ),
         ),
       )
-    ))
-    ;
+    ));
   }
 }

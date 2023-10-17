@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calculator/Screens/mainWindow.dart';
 import 'package:flutter_calculator/repo/widgets/elevetedBtn.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -82,7 +83,10 @@ class _RegistrationWindowState extends State<RegistrationWindow> {
                         ),
                     ),
                     const SizedBox(height: 60,),
-                    elevatedBtn(tittle: "Sign in", onTap: () => {} ),
+                    elevatedBtn(
+                      tittle: "Sign in",
+                       onTap: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => const MainWindow())); }, 
+                       ),
                     const SizedBox(height: 30,),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -98,7 +102,10 @@ class _RegistrationWindowState extends State<RegistrationWindow> {
                             )
                     ),
                     const SizedBox(height: 30,),
-                    elevatedBtn(tittle: "Профиль", onTap: () => {} )
+                    elevatedBtn(
+                      tittle: "Профиль",
+                      onTap: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => const MainWindow())); }, 
+                      )
                   ]
               ),)
           ),

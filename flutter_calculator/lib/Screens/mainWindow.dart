@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calculator/repo/widgets/MediaType.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});
@@ -17,7 +18,7 @@ class _MainWindowState extends State<MainWindow> {
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: [
+            children:<Widget> [
               const SizedBox(height: 20,),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,7 +50,15 @@ class _MainWindowState extends State<MainWindow> {
                   ),
               ),
               const SizedBox(height: 10,),
-              //ListView.builder(itemBuilder: itemBuilder)
+              Container(
+                height: 80,
+                width: MediaQuery.of(context).size.width,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 10,
+                  itemBuilder: (context, int index) {return MediaType();}
+                ),
+              ),
             ],
           ),
         )
