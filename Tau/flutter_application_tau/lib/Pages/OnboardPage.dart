@@ -65,7 +65,7 @@ class _OnboardPageState extends State<OnboardPage> {
                 if(currentIndex != contents.length-1){
                   _controller.nextPage(
                     duration: const Duration(seconds: 1), 
-                    curve: Curves.fastEaseInToSlowEaseOut
+                    curve: Curves.bounceInOut,
                   );
                 }
               },
