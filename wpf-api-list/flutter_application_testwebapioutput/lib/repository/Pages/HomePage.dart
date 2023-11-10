@@ -1,5 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_application_testwebapioutput/widgets/item_widget.dart';
+import 'package:flutter_application_testwebapioutput/api/api.dart';
+import 'package:flutter_application_testwebapioutput/main.dart';
+import 'package:flutter_application_testwebapioutput/repository/Data.dart';
+import 'package:flutter_application_testwebapioutput/repository/models/Category.dart';
+import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
+import 'package:flutter_application_testwebapioutput/repository/widgets/itemWidget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,14 +15,21 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+
+
+
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
+  List<Item> _items = getIt<Data>().itemList;
+  List<Category> _categories = getIt<Data>().itemCategory;
+  String server = "";
 
   @override
   void initState(){
-    _tabController = TabController(length: 4, vsync: this, initialIndex: 0);
-    _tabController.addListener(_handeTabSelection);
     super.initState();
+    _tabController = TabController(length: _categories.length , vsync: this, initialIndex: 0);
+    _tabController.addListener(_handeTabSelection);
+    
   }
 
   _handeTabSelection(){
@@ -60,10 +74,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ],
                 ),
               ),
-              const SizedBox(height: 30,),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Text("Time to жрать...", style: TextStyle(fontSize: 36, fontWeight: FontWeight.w500,),),
+              const SizedBox(height: 0,),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Text("Time to хавать...$server", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500,),),
                 ),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 15),
@@ -90,29 +104,36 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 controller: _tabController,
                 isScrollable: true,
                 tabs: const [
-                  Tab(text: "jopa",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "jopa",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
-                  Tab(text: "xui",),
+                  Tab(text: "eda",),
                 ]),
               const SizedBox(height: 10,),
               Center(
-                child: const [
-                  ItemsWidget(),
-                  ItemsWidget(),
-                  ItemsWidget(),
-                  ItemsWidget(),][_tabController.index],
-              )
+  child: _items.isEmpty
+      ? const CircularProgressIndicator()
+      : Container(
+          height: 800, // Set a fixed height or adjust to your requirements
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: 2,
+              crossAxisSpacing: 2
+            ),
+            itemCount: _items.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ItemWidget(item:_items[index]);
+            },
+          ),
+        ),
+)
+
+
+              // Center(
+              //   child: const [
+              //     ItemsWidget(),
+              //     ItemsWidget(),
+              //     ItemsWidget(),
+              //     ItemsWidget(),][_tabController.index],
+              // )
             ],
           )
         )

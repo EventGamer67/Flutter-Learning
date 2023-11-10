@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
 
 class ItemsWidget extends StatelessWidget {
-  const ItemsWidget({super.key});
+  const ItemsWidget({super.key, required Item});
 
   @override
   Widget build(BuildContext context) {
