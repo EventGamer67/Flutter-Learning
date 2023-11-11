@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_testwebapioutput/api/api.dart';
 import 'package:flutter_application_testwebapioutput/main.dart';
 import 'package:flutter_application_testwebapioutput/repository/Pages/HomePage.dart';
 import 'package:flutter_application_testwebapioutput/repository/data.dart';
+import 'package:flutter_application_testwebapioutput/repository/widgets/TextField.dart';
+import 'package:get_it/get_it.dart';
 
 class AuthrorizationScreen extends StatefulWidget {
   const AuthrorizationScreen({super.key});
@@ -12,6 +15,18 @@ class AuthrorizationScreen extends StatefulWidget {
 }
 
 class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
+
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  void auth(){
+    if(_loginController.text == "a" && _passwordController.text == "a"){
+      Navigator.push(context, MaterialPageRoute(builder: ((context) => HomePage() )));
+      FocusManager.instance.primaryFocus?.unfocus();
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong"),));
+  }
 
   @override
   void initState(){
@@ -23,8 +38,9 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
     print("Loading");
     bool succesfull = await Api().ping();
     if(succesfull){
-      getIt<Data>().itemList = await Api().getItems();
-      getIt<Data>().itemCategory = await Api().loadCategories();
+      Data dataInstance = GetIt.I.get<Data>();
+      dataInstance.itemList = await Api().getItems();
+      dataInstance.itemCategory = await Api().loadCategories();
       print("got");
     }
     else{
@@ -47,20 +63,20 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text("ПИЛЬДУС", style: TextStyle(color: Colors.white, fontSize: 52,),textAlign: TextAlign.center,),
+                  const Text("FoodPie", style: TextStyle(color: Colors.white, fontSize: 52,),textAlign: TextAlign.center,),
                   const Text("Always Give Better Food Ever", style: TextStyle(color: Colors.yellow, fontSize: 14)),
                   const SizedBox(height: 30,),
                   const SizedBox(height: 30,),
-                  const MyTextField(icon: Icons.person_2_outlined, hinttext: "Username",),
+                  MyTextField(icon: Icons.person_2_outlined, hinttext: "Username",controller: _loginController,),
                   const SizedBox(height: 20,),
-                  const MyTextField(icon: Icons.key_off_outlined, hinttext: "Password",),
+                  MyTextField(icon: Icons.key_off_outlined, hinttext: "Password",controller: _passwordController),
                   const SizedBox(height: 20,),
                   Material(
                     color: Colors.white,
                     borderRadius: const BorderRadius.all(Radius.circular(36)),
                     child: InkWell(
                       borderRadius: const BorderRadius.all(Radius.circular(36)),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: ((context) => HomePage() ) )),
+                      onTap: () => auth(),
                       child: Container(
                         height: 50,
                         alignment: Alignment.center,
@@ -85,62 +101,5 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
         ) 
       )
     );
-  }
-}
-
-class MyTextField extends StatelessWidget {
-
-  final IconData icon;
-  final String hinttext;
-
-  const MyTextField({
-    super.key,
-    required this.icon,
-    required this.hinttext,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-      border: Border(
-        top: BorderSide(color: Colors.white.withOpacity(0.5), width: 1, style: BorderStyle.solid, strokeAlign: 1),
-        right: BorderSide(color: Colors.white.withOpacity(0.5), width: 1, style: BorderStyle.solid, strokeAlign: 1),
-        bottom: BorderSide(color: Colors.white.withOpacity(0.5), width: 1, style: BorderStyle.solid, strokeAlign: 1),
-        left: BorderSide(color: Colors.white.withOpacity(0.5), width: 1, style: BorderStyle.solid, strokeAlign: 1),
-        ),
-      borderRadius: const BorderRadius.all(Radius.circular(36)),
-      color: Colors.white.withOpacity(0.08)
-      ),
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          TextField(
-          style: const TextStyle(color: Colors.white),
-          textAlign: TextAlign.center,
-          //eybdthcfkmyst rjvbgt
-          decoration: InputDecoration.collapsed(
-              hintText: hinttext,
-              hintStyle: const TextStyle(color: Colors.white)
-          ),),
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Container(
-              alignment: Alignment.centerLeft,
-            child: Container(
-              width: 50,
-              height: 50,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white
-              ),
-              child: Center(child: Icon(icon, size: 36, color: Colors.red))
-              ),
-            ),
-          ),
-          ]
-      ));
   }
 }

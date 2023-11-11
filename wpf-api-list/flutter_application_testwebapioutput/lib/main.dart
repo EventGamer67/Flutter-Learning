@@ -3,18 +3,15 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_testwebapioutput/App.dart';
-import 'package:flutter_application_testwebapioutput/repository/Data.dart';
-import 'package:flutter_application_testwebapioutput/repository/Pages/HomePage.dart';
+import 'package:flutter_application_testwebapioutput/repository/data.dart';
 import 'package:get_it/get_it.dart';
 
-GetIt getIt = GetIt.instance;
-
 void main() async {
-
+  
   final dio = Dio();
-  getIt.registerSingleton<Dio>(dio);
+  GetIt.I.registerSingleton<Dio>(dio);
   final data = Data();
-  getIt.registerSingleton<Data>(data);
+  GetIt.I.registerSingleton<Data>(data);
 
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());

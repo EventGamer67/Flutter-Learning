@@ -7,6 +7,7 @@ import 'package:flutter_application_testwebapioutput/repository/Data.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Category.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
 import 'package:flutter_application_testwebapioutput/repository/widgets/itemWidget.dart';
+import 'package:get_it/get_it.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,16 +21,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin{
   late TabController _tabController;
-  List<Item> _items = getIt<Data>().itemList;
-  List<Category> _categories = getIt<Data>().itemCategory;
+  late Data dataInstance;
+  late List<Item> _items;
+  late List<Category> _categories;
   String server = "";
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    _tabController = TabController(length: _categories.length , vsync: this, initialIndex: 0);
-    _tabController.addListener(_handeTabSelection);
-    
+    print(GetIt.I.get<Data>());
+    _tabController = TabController(length: 4, vsync: this );
+    dataInstance = GetIt.I.get<Data>();
+    _items = dataInstance.itemList;
+    _categories = dataInstance.itemCategory;
   }
 
   _handeTabSelection(){
