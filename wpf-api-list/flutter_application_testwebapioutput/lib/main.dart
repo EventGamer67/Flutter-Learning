@@ -6,12 +6,15 @@ import 'package:flutter_application_testwebapioutput/App.dart';
 import 'package:flutter_application_testwebapioutput/repository/data.dart';
 import 'package:get_it/get_it.dart';
 
+final getIt = GetIt.instance;
+
 void main() async {
   
   final dio = Dio();
-  GetIt.I.registerSingleton<Dio>(dio);
+  getIt.registerSingleton<Dio>(dio); // Register Dio as singleton
+
   final data = Data();
-  GetIt.I.registerSingleton<Data>(data);
+  getIt.registerSingleton<Data>(data); // Register ProductsData as singleton of type Data
 
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());

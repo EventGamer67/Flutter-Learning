@@ -1,12 +1,38 @@
 
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter_application_testwebapioutput/api/requestModels/UserDto.dart';
 import 'package:flutter_application_testwebapioutput/main.dart';
+import 'package:flutter_application_testwebapioutput/repository/data.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Category.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
+import 'package:flutter_application_testwebapioutput/repository/models/User.dart';
 import 'package:get_it/get_it.dart';
 
 class Api {
+
+  Future<bool> Login({required password, required login}) async {
+    try {
+      final userDto = UserDto(user_name: login, password: password);
+      final response = await GetIt.I.get<Dio>().post('https://10.0.2.2:7080/login',data: userDto.toJson(),);
+      if (response.statusCode == 200) { // Check for a successful response
+        final userData = response.data as Map<String, dynamic>; // Assuming data is already parsed
+        final user = User.fromJson(userData);
+        GetIt.I.get<Data>().user = user;
+        return true;
+      } 
+      else 
+      {
+        // Handle non-200 status code, e.g., show an error message
+        return false;
+      }
+    } 
+    catch (e) 
+    {
+      print(e); // Log DioException for further investigation
+      return false;
+    }
+  }
 
   Future<List<Item>> getItems() async {
     final response = await GetIt.I.get<Dio>().get('https://10.0.2.2:7080/getitems');

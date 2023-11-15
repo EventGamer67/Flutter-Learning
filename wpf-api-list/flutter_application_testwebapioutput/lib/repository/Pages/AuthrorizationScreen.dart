@@ -19,26 +19,29 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void auth(){
-    if(_loginController.text == "a" && _passwordController.text == "a"){
+  void auth() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final response = await Api().Login(password: _loginController.text, login: _passwordController.text);
+    if(response == true){
+      Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: ((context) => HomePage() )));
-      FocusManager.instance.primaryFocus?.unfocus();
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong"),));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong data"),));
   }
 
   @override
   void initState(){
     super.initState();
     checkserver();
+    print(getIt.isRegistered<Data>());
   }
 
   void checkserver() async {
     print("Loading");
     bool succesfull = await Api().ping();
     if(succesfull){
-      Data dataInstance = GetIt.I.get<Data>();
+      Data dataInstance = getIt.get<Data>();
       dataInstance.itemList = await Api().getItems();
       dataInstance.itemCategory = await Api().loadCategories();
       print("got");
