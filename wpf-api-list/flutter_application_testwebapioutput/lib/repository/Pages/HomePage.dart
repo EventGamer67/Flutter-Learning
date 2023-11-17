@@ -109,23 +109,23 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(40)),
+                      borderRadius: const BorderRadius.all(Radius.circular(40)),
                       border: Border.all(color: Colors.purple)
                     ),
                     child: TextField(
                       controller: _controller,
                       onChanged: (text) { searchTextChanged(text); },
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "Ищем...",
                         border: InputBorder.none,
                         icon: Padding(
-                          padding: const EdgeInsets.all(12.0),
+                          padding: EdgeInsets.all(12.0),
                           child: Icon(Icons.search_outlined),
                         ),
                       ),
                     ),
                   ),
-                  DropdownMenu(dropdownMenuEntries: [ DropdownMenuEntry(value: "value", label: "label") ])
+                  const DropdownMenu(dropdownMenuEntries: [ DropdownMenuEntry(value: "value", label: "label") ])
                   ]
                 ),
               )
