@@ -11,6 +11,8 @@ class ItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: 100,
+      height: 100,
         decoration: BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(item.item_image![0] ?? ''), 
@@ -22,7 +24,7 @@ class ItemWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(item.item_name ?? ' ', style: TextStyle( fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),)
+              Text(item.item_name ?? ' ', style: TextStyle( fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),textAlign: TextAlign.center,)
           ]
            ),
       ),);

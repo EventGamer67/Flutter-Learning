@@ -70,9 +70,9 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
                   const Text("Always Give Better Food Ever", style: TextStyle(color: Colors.yellow, fontSize: 14)),
                   const SizedBox(height: 30,),
                   const SizedBox(height: 30,),
-                  MyTextField(icon: Icons.person_2_outlined, hinttext: "Username",controller: _loginController,),
+                  MyTextField(icon: Icons.person_2_outlined, hinttext: "Username",controller: _loginController,showpassword: false),
                   const SizedBox(height: 20,),
-                  MyTextField(icon: Icons.key_off_outlined, hinttext: "Password",controller: _passwordController),
+                  MyTextField(icon: Icons.key_off_outlined, hinttext: "Password",controller: _passwordController,showpassword: true),
                   const SizedBox(height: 20,),
                   Material(
                     color: Colors.white,

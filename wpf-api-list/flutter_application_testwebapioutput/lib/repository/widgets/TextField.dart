@@ -1,17 +1,18 @@
-
 import 'package:flutter/material.dart';
 
 class MyTextField extends StatelessWidget {
 
   final IconData icon;
   final String hinttext;
+  final bool showpassword;
   final TextEditingController controller;
 
   const MyTextField({
     super.key,
     required this.icon,
     required this.hinttext,
-    required this.controller
+    required this.controller,
+    required this.showpassword,
   });
 
   @override
@@ -33,6 +34,7 @@ class MyTextField extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           TextField(
+          obscureText: showpassword,
           style: const TextStyle(color: Colors.white),
           textAlign: TextAlign.center,
           controller: controller,
@@ -50,7 +52,7 @@ class MyTextField extends StatelessWidget {
               height: 50,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white
+                color: Colors.white     
               ),
               child: Center(child: Icon(icon, size: 36, color: Colors.red))
               ),
