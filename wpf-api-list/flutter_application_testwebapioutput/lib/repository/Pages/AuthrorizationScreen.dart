@@ -4,6 +4,7 @@ import 'package:flutter_application_testwebapioutput/api/api.dart';
 import 'package:flutter_application_testwebapioutput/main.dart';
 import 'package:flutter_application_testwebapioutput/repository/Pages/HomePage.dart';
 import 'package:flutter_application_testwebapioutput/repository/data.dart';
+import 'package:flutter_application_testwebapioutput/repository/models/User.dart';
 import 'package:flutter_application_testwebapioutput/repository/widgets/TextField.dart';
 import 'package:get_it/get_it.dart';
 
@@ -23,6 +24,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
     FocusManager.instance.primaryFocus?.unfocus();
     final response = await Api().Login(password: _loginController.text, login: _passwordController.text);
     if(response == true){
+
       Navigator.pop(context);
       Navigator.push(context, MaterialPageRoute(builder: ((context) => HomePage() )));
       return;
@@ -34,7 +36,6 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
   void initState(){
     super.initState();
     checkserver();
-    print(getIt.isRegistered<Data>());
   }
 
   void checkserver() async {
@@ -44,6 +45,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
       Data dataInstance = getIt.get<Data>();
       dataInstance.itemList = await Api().getItems();
       dataInstance.itemCategory = await Api().loadCategories();
+      dataInstance.user = User();
       print("got");
     }
     else{

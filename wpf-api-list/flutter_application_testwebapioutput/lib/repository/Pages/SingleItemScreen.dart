@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_testwebapioutput/repository/data.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
+import 'package:get_it/get_it.dart';
 
 class SignleItemScreen extends StatefulWidget {
   final Item item;
@@ -31,14 +33,21 @@ class _SignleItemScreenState extends State<SignleItemScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.black, Colors.transparent, Colors.transparent, Colors.black],
+                    colors: [
+                      Colors.black,
+                      Colors.transparent,
+                      Colors.transparent,
+                      Colors.black
+                    ],
                     stops: [0.0, 0.1, 0.9, 1.0],
                   ),
                 ),
               ),
               Column(
                 children: [
-                  SizedBox(height: 600,),
+                  const SizedBox(
+                    height: 600,
+                  ),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: Padding(
@@ -46,8 +55,20 @@ class _SignleItemScreenState extends State<SignleItemScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(this.widget.item.item_name! ,style: TextStyle(color: Colors.white, fontSize: 48,),softWrap: false, overflow: TextOverflow.fade,),
-                          Text("Купи " + this.widget.item.item_name! ,style: TextStyle(color: Colors.white, fontSize: 24,),),
+                          Text(this.widget.item.item_name!,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 48,
+                              ),
+                              softWrap: false,
+                              overflow: TextOverflow.fade),
+                          Text(
+                            "Купи " + this.widget.item.item_name!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -55,19 +76,27 @@ class _SignleItemScreenState extends State<SignleItemScreen> {
                   Padding(
                     padding: EdgeInsets.all(20),
                     child: Material(
-                    color: Colors.white,
-                    borderRadius: const BorderRadius.all(Radius.circular(36)),
-                    child: InkWell(
+                      color: Colors.white,
                       borderRadius: const BorderRadius.all(Radius.circular(36)),
-                      onTap: () => print("ad"),
-                      child: Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: Text("Take ${this.widget.item.item_name!}", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),),
+                      child: InkWell(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(36)),
+                        onTap: () {
+                          final dataInstance = GetIt.I.get<Data>();
+                          dataInstance.user.cart_items?.add(widget.item.itemID.toString());
+                          print(dataInstance.user.cart_items?.length);
+                        },
+                        child: Container(
+                          height: 50,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Take ${this.widget.item.item_name!}",
+                            style: const TextStyle(
+                                color: Colors.red, fontWeight: FontWeight.bold),
+                          ),
                         ),
+                      ),
                     ),
-                  ),
-                  
                   )
                 ],
               ),

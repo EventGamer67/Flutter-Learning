@@ -1,8 +1,10 @@
 class User {
-  final String? userID;
-  final String? user_roleID;
+  final int? userID;
+  final int? user_roleID;
   final String? user_name;
   final String? user_passwordHash;
+
+  final List<String>? cart_items = [];
 
   User({
     this.userID,
