@@ -1,85 +1,116 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_calculator/Screens/registration.dart';
+import 'package:flutter_calculator/Services/api.dart';
+import 'package:flutter_calculator/Services/data.dart';
 import 'package:flutter_calculator/repo/widgets/elevetedBtn.dart';
+import 'package:get_it/get_it.dart';
 
 class OnBoardWindow extends StatelessWidget {
   const OnBoardWindow({super.key});
 
+  _loadData() async{
+    Data data = GetIt.I.get<Data>();
+    Api api = GetIt.I.get<Api>();
+
+    data.feelings = await api.getFeelings();
+    data.quotes = await api.getQuotes();
+
+    print("succ");
+  }
+
   @override
   Widget build(BuildContext context) {
-    //String imagePath = 'assets/img/Logo.png';
+
+    _loadData();
+
     return Scaffold(
       body: Container(
         alignment: Alignment.center,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/img/bg.png'),
-            fit: BoxFit.cover
-          ),
+              image: AssetImage('assets/img/bg.png'), fit: BoxFit.cover),
         ),
         child: SafeArea(
-          child: Center(
-            child:Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height:400,
+            child: Stack(
+          children: [
+            Center(
+              child: Container(
+                height: 400,
+                alignment: Alignment.center,
+                child: const Stack(
                   alignment: Alignment.center,
-                  child: const Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Positioned(
-                        top: 65,
-                        child: Image(
-                          image: AssetImage('assets/img/Logo.png'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Text(
-                  'ПРИВЕТ', 
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 34,
-                    fontFamily: 'Alegreya'
+                  children: [
+                    Image(
+                      image: AssetImage('assets/img/Logo.png'),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  'ПРИВЕТ',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 34,
+                      fontFamily: 'Alegreya'),
+                ),
                 const Text(
                   'Наслаждайся отборочными. \n Будь внимателен. \n Делай хорошо.',
-                   style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontFamily: 'AlegreyaSans'
-                    ),
-                   textAlign: TextAlign.center,
-                   ),
-                const SizedBox(height: 20,),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontFamily: 'AlegreyaSans'),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
                 elevatedBtn(
-                  onTap: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => const RegistrationWindow())); }, 
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegistrationWindow()));
+                  },
                   tittle: 'Войти в аккаунт',
                 ),
-                const SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                      Text(
+                    Text(
                       'Еще нет аккаунта?',
-                      style: TextStyle(color: Colors.white, fontSize: 20, fontFamily: 'Alegreya'),
-                      ),
-                      SizedBox(width: 20,),
-                      Text(
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'Alegreya'),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Text(
                       'Зарегистрируйтесь',
-                      style: TextStyle(color: Colors.white, fontSize: 20,fontFamily: 'AlegreyaSans', fontWeight: FontWeight.w500),
-                      )
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontFamily: 'AlegreyaSans',
+                          fontWeight: FontWeight.w500),
+                    )
                   ],
+                ),
+                const SizedBox(
+                  height: 35,
                 )
               ],
             ),
-          )
-        ),
-      ),  
+          ],
+        )),
+      ),
     );
   }
 }
