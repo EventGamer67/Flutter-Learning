@@ -42,7 +42,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
     print("Loading");
     bool succesfull = await Api().ping();
     if(succesfull){
-      Data dataInstance = getIt.get<Data>();
+      Data dataInstance = GetIt.I.get<Data>();
       dataInstance.itemList = await Api().getItems();
       dataInstance.itemCategory = await Api().loadCategories();
       dataInstance.user = User();
