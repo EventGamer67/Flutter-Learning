@@ -9,27 +9,30 @@ class elevatedBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-      padding: const EdgeInsets.all(25),
-      margin: const EdgeInsets.symmetric(horizontal: 25),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 124, 154, 146),
-        borderRadius: BorderRadius.circular(8)
-      ),
-      child: Center(
-        child: Text(
-          tittle,
-          style: const TextStyle(
-            color: Colors.white,
-            //fontWeight: FontWeight.bold,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'AlegreyaSans',
-            fontSize: 25
+    return Material(
+      color: const Color.fromARGB(255, 124, 154, 146),
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        onTap: onTap,
+        child: Ink(
+          child: Container(
+          padding: const EdgeInsets.all(25),
+          margin: const EdgeInsets.symmetric(horizontal: 25),
+          child: Center(
+            child: Text(
+              tittle,
+              style: const TextStyle(
+                color: Colors.white,
+                //fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'AlegreyaSans',
+                fontSize: 25
+              ),
+            ),
+          )
           ),
         ),
-      )
-    ));
+      ),
+    );
   }
 }

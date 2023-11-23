@@ -68,14 +68,17 @@ class OnBoardWindow extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                elevatedBtn(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegistrationWindow()));
-                  },
-                  tittle: 'Войти в аккаунт',
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: elevatedBtn(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RegistrationWindow()));
+                    },
+                    tittle: 'Войти в аккаунт',
+                  ),
                 ),
                 const SizedBox(
                   height: 20,

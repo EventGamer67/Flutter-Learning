@@ -79,14 +79,17 @@ class _RegistrationWindowState extends State<RegistrationWindow> {
             const SizedBox(
               height: 60,
             ),
-            elevatedBtn(
-              tittle: "Sign in",
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MainWindow()));
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: elevatedBtn(
+                tittle: "Sign in",
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainWindow()));
+                },
+              ),
             ),
             const SizedBox(
               height: 30,
@@ -105,14 +108,17 @@ class _RegistrationWindowState extends State<RegistrationWindow> {
             const SizedBox(
               height: 30,
             ),
-            elevatedBtn(
-              tittle: "Профиль",
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MainWindow()));
-              },
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: elevatedBtn(
+                tittle: "Профиль",
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainWindow()));
+                },
+              ),
             )
           ]),
         )),
