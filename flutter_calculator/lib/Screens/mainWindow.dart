@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_calculator/Screens/Home/account_page.dart';
 import 'package:flutter_calculator/Screens/Home/main_page.dart';
 import 'package:flutter_calculator/Screens/Home/music_page.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({super.key});
+  
 
   @override
   State<MainWindow> createState() => _MainWindowState();
@@ -23,9 +25,7 @@ class _MainWindowState extends State<MainWindow> {
       PlaceHolderPage(
         placeholderText: "Тут будет прослушивание",
       ),
-      PlaceHolderPage(
-        placeholderText: "Тут будет меню",
-      ),
+      AccountPage()
     ];
   }
 
@@ -38,12 +38,14 @@ class _MainWindowState extends State<MainWindow> {
           showUnselectedLabels: false,
           backgroundColor: Color.fromRGBO(37, 51, 52, 1),
           fixedColor: Colors.white,
-          currentIndex: 0,
           onTap: (value) {
             setState(() {
               _selectedIndex = value;
             });
           },
+          currentIndex: _selectedIndex,
+
+          //
           unselectedIconTheme:
               IconThemeData(color: Colors.white.withOpacity(0.3)),
           elevation: 0,
