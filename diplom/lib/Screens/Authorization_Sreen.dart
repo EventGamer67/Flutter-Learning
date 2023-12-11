@@ -1,7 +1,10 @@
 import 'package:diplom/Screens/Main_Screen.dart';
+import 'package:diplom/Services/Api.dart';
+import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Widgets/IconTextField_Widget.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 class AuthrorizationScreen extends StatefulWidget {
   const AuthrorizationScreen({super.key});
@@ -14,46 +17,43 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
   final TextEditingController _loginController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // void auth() async {
-  //   FocusManager.instance.primaryFocus?.unfocus();
-  //   final response = await Api().Login(password: _loginController.text, login: _passwordController.text);
-  //   if(response == true){
-
-  //     Navigator.pop(context);
-  //     Navigator.push(context, MaterialPageRoute(builder: ((context) => HomePage() )));
-  //     return;
-  //   }
-  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Wrong data"),));
-  // }
-
   @override
   void initState() {
     super.initState();
     //checkserver();
   }
 
-  void goToMain() {
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (BuildContext context) => Main_Screen()),
-  );
-}
-
-
-  // void checkserver() async {
-  //   print("Loading");
-  //   bool succesfull = await Api().ping();
-  //   if(succesfull){
-  //     Data dataInstance = GetIt.I.get<Data>();
-  //     dataInstance.itemList = await Api().getItems();
-  //     dataInstance.itemCategory = await Api().loadCategories();
-  //     dataInstance.user = User();
-  //     print("got");
-  //   }
-  //   else{
-  //     print("worng");
-  //   }
-  // }
+  void goToMain() async {
+    final result = await Api().login(
+        password: _passwordController.text, email: _loginController.text);
+    if (result == null) {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: Text(
+                "Ошибка",
+                style: TextStyle(fontFamily: 'Comic Sans'),
+              ),
+              actions: [
+                CupertinoButton(
+                    child: Text("Закрыть",
+                        style: TextStyle(fontFamily: 'Comic Sans')),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    })
+              ],
+            );
+          });
+      return;
+    }
+    GetIt.I.get<Data>().user = result;
+    await Api().loadData();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (BuildContext context) => const Main_Screen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
                     height: 20,
                   ),
                   Material(
-                    color: Color.fromARGB(255, 52, 152, 219),
+                    color: const Color.fromARGB(255, 52, 152, 219),
                     borderRadius: const BorderRadius.all(Radius.circular(36)),
                     child: InkWell(
                       borderRadius: const BorderRadius.all(Radius.circular(36)),

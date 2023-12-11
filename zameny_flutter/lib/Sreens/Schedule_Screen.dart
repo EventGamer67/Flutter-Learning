@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:zameny_flutter/Services/Data.dart';
 import 'package:zameny_flutter/Services/Tools.dart';
 import 'package:zameny_flutter/Widgets/CourseTile.dart';
 import 'package:zameny_flutter/Widgets/GroupTile.dart';
+import 'package:zameny_flutter/Widgets/Test.dart';
 import 'package:zameny_flutter/blocs/schedule_bloc.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -20,14 +22,35 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   DateTime septemberFirst = DateTime(2023, 9, 1); // 1 сентября
   late final todayWeek;
   var currentWeek;
-
+  late final ScrollController scrollController;
   final bloc = ScheduleBloc();
-
   late int groupIDSeek;
+
+  List<GlobalKey> keys = List.generate(
+    6,
+    (index) => GlobalKey(debugLabel: "$index"),
+  );
 
   @override
   void initState() {
     super.initState();
+
+    scrollController = ScrollController();
+
+    scrollController.addListener(() {
+      double ScrollPosition = scrollController.position.pixels;
+
+      keys.forEach((element) {
+        RenderObject? renderObject = element.currentContext?.findRenderObject();
+        if (renderObject != null && renderObject is RenderBox) {
+          Offset widgetPosition = renderObject.localToGlobal(Offset.zero);
+          // widgetPosition - это координаты верхнего левого угла виджета на экране
+
+          print('Координаты виджета с ключом ${element}: $widgetPosition');
+        }
+      });
+    });
+
     groupIDSeek = GetIt.I.get<Data>().seekGroup;
     currentWeek = ((NavigationDate.difference(septemberFirst).inDays +
                 septemberFirst.weekday) ~/
@@ -99,55 +122,84 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                 groupID: groupIDSeek,
                 dateStart: getStartOfWeek(NavigationDate),
                 dateEnd: getEndOfWeek(NavigationDate))),
-            child: SingleChildScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    Header(),
-                    const SizedBox(
-                      height: 10,
+            child: CustomScrollView(
+              controller: scrollController,
+              //physics: AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      children: [
+                        Header(),
+                        const SizedBox(height: 10),
+                        BlocBuilder<ScheduleBloc, ScheduleState>(
+                          builder: (context, state) {
+                            if (state is ScheduleLoaded) {
+                              return GroupChooser(
+                                context,
+                                _groupSelected,
+                                groupIDSeek,
+                              );
+                            } else if (state is ScheduleFailedLoading) {
+                              return const Text("Failed");
+                            } else if (state is ScheduleLoading) {
+                              return const Text("Loading");
+                            } else if (state is ScheduleInitial) {
+                              return const Text("Starting");
+                            } else {
+                              return const SizedBox(); // or some default widget
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DateHeader(
+                          parentWidget: this,
+                          todayWeek: todayWeek,
+                          currentWeek: currentWeek,
+                        ),
+                      ],
                     ),
-                    BlocBuilder<ScheduleBloc, ScheduleState>(
-                        builder: (context, state) {
-                      return switch (state) {
-                        ScheduleLoaded() =>
-                          GroupChooser(context, _groupSelected, groupIDSeek),
-                        ScheduleFailedLoading() => const Text("Failed"),
-                        ScheduleLoading() => const Text("Loading"),
-                        ScheduleInitial() => const Text("Starting"),
-                      };
-                    }),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    DateHeader(
-                        parentWidget: this,
-                        todayWeek: todayWeek,
-                        currentWeek: currentWeek),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    BlocBuilder<ScheduleBloc, ScheduleState>(
-                        builder: (context, state) {
-                      return switch (state) {
-                        ScheduleLoaded() => LessonList(
+                  ),
+                ),
+                SliverPersistentHeader(
+                    pinned: true,
+                    delegate: CustomSliverPersistentHeader(
+                      minHeight: 50,
+                      maxHeight: 80,
+                    )),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverToBoxAdapter(
+                    child: BlocBuilder<ScheduleBloc, ScheduleState>(
+                      builder: (context, state) {
+                        if (state is ScheduleLoaded) {
+                          return LessonList(
                             groupID: groupIDSeek,
                             weekDate: NavigationDate,
                             todayWeek: todayWeek,
-                            currentWeek: currentWeek),
-                        ScheduleFailedLoading() => const FailedLoadWidget(),
-                        ScheduleLoading() => const Text("Loading"),
-                        ScheduleInitial() => const Text("Starting"),
-                      };
-                    }),
-                    const SizedBox(
-                      height: 80,
-                    )
-                  ],
+                            DaysKeys: keys,
+                            currentWeek: currentWeek,
+                          );
+                        } else if (state is ScheduleFailedLoading) {
+                          return const FailedLoadWidget();
+                        } else if (state is ScheduleLoading) {
+                          return const Text("Loading");
+                        } else if (state is ScheduleInitial) {
+                          return const Text("Starting");
+                        } else {
+                          return const SizedBox(); // or some default widget
+                        }
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                SliverToBoxAdapter(
+                  child: const SizedBox(
+                    height: 80,
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -424,7 +476,8 @@ DateTime getFirstDayOfWeek(int year, int week) {
 }
 
 Widget LessonList(
-    {required DateTime weekDate,
+    {required List<Key> DaysKeys,
+    required DateTime weekDate,
     required int groupID,
     required todayWeek,
     required currentWeek}) {
@@ -439,58 +492,72 @@ Widget LessonList(
       .toList();
   return Container(
     child: Column(children: [
-      !zamenas.isEmpty
-          ? Container()
-          : Container(
-              child: Container(
-                decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: Color.fromARGB(255, 59, 64, 82),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Color.fromARGB(255, 43, 43, 58),
-                          blurStyle: BlurStyle.outer,
-                          blurRadius: 12)
-                    ]),
-                child: const Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        size: 42,
-                        color: Colors.blue,
-                        shadows: [
-                          Shadow(
-                            color: Color.fromARGB(255, 28, 95, 182),
-                            blurRadius: 6,
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "Loaded default",
-                        style: TextStyle(
-                            fontFamily: 'Ubuntu',
-                            fontSize: 20,
-                            color: Colors.white),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ),
+      !zamenas.isEmpty ? Container() : SearchBannerMessageWidget(),
       Column(
-          children: ScheduleList(data, groupID, zamenas, startDate, currentDay,
-              todayWeek, currentWeek)),
+          children: ScheduleList(data, groupID, zamenas, DaysKeys, startDate,
+              currentDay, todayWeek, currentWeek)),
     ]),
   );
 }
 
-List<Widget> ScheduleList(Data data, int groupID, List<Zamena> zamenas,
-    DateTime startDate, int currentDay, todayWeek, currentWeek) {
+class SearchBannerMessageWidget extends StatelessWidget {
+  const SearchBannerMessageWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Container(
+        decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            color: Color.fromARGB(255, 59, 64, 82),
+            boxShadow: [
+              BoxShadow(
+                  color: Color.fromARGB(255, 43, 43, 58),
+                  blurStyle: BlurStyle.outer,
+                  blurRadius: 12)
+            ]),
+        child: const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                size: 42,
+                color: Colors.blue,
+                shadows: [
+                  Shadow(
+                    color: Color.fromARGB(255, 28, 95, 182),
+                    blurRadius: 6,
+                  )
+                ],
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                "Loaded default",
+                style: TextStyle(
+                    fontFamily: 'Ubuntu', fontSize: 20, color: Colors.white),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+List<Widget> ScheduleList(
+    Data data,
+    int groupID,
+    List<Zamena> zamenas,
+    List<Key> DaysKeys,
+    DateTime startDate,
+    int currentDay,
+    todayWeek,
+    currentWeek) {
   return List.generate(6, (iter) {
     final day = iter + 1;
 
@@ -507,7 +574,49 @@ List<Widget> ScheduleList(Data data, int groupID, List<Zamena> zamenas,
     List<Zamena> DayZamenas =
         zamenas.where((element) => element.date.weekday == day).toList();
     DayZamenas.sort((a, b) => a.LessonTimingsID > b.LessonTimingsID ? 1 : -1);
+    return DayScheduleWidget(
+      day: day,
+      DayZamenas: DayZamenas,
+      lessons: lessons,
+      DayKey: DaysKeys[iter],
+      startDate: startDate,
+      data: data,
+      currentDay: currentDay,
+      todayWeek: todayWeek,
+      currentWeek: currentWeek,
+    );
+  });
+}
+
+class DayScheduleWidget extends StatelessWidget {
+  final DayKey;
+  final DateTime startDate;
+  final int currentDay;
+  final int currentWeek;
+  final int todayWeek;
+  final Data data;
+
+  const DayScheduleWidget({
+    super.key,
+    required this.day,
+    required this.DayZamenas,
+    required this.lessons,
+    required this.DayKey,
+    required this.startDate,
+    required this.currentDay,
+    required this.currentWeek,
+    required this.todayWeek,
+    required this.data,
+  });
+
+  final int day;
+  final List<Zamena> DayZamenas;
+  final List<Lesson> lessons;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
+      key: DayKey,
       child: Column(
         children: [
           Align(
@@ -526,7 +635,7 @@ List<Widget> ScheduleList(Data data, int groupID, List<Zamena> zamenas,
                           fontFamily: 'Ubuntu'),
                     ),
                     Text(
-                      "${getMonthName(startDate.add(Duration(days: iter)).month)} ${startDate.add(Duration(days: iter)).day}",
+                      "${getMonthName(startDate.add(Duration(days: day - 1)).month)} ${startDate.add(Duration(days: day - 1)).day}",
                       //"${getMonthName(currentDayDateTime.add(Duration(days: iter)).month)} ${currentDayDateTime.add(Duration(days: iter)).day}",
                       style: const TextStyle(
                           color: Color.fromARGB(100, 255, 255, 255),
@@ -659,7 +768,7 @@ List<Widget> ScheduleList(Data data, int groupID, List<Zamena> zamenas,
         ],
       ),
     );
-  });
+  }
 }
 
 // if (DayZamenas.any((element) =>

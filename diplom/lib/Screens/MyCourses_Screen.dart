@@ -1,3 +1,4 @@
+import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Screens/Courselearn_Screen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:flutter/material.dart';
@@ -67,18 +68,30 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                   "https://images.spiceworks.com/wp-content/uploads/2023/05/17141122/Shutterstock_2079263023.jpg",
               courseName: "С# для маленьких и дебилов",
               completedPercents: "74%",
-              course: CoursesList[0],
+              course: Course(
+                id: 1,
+                name: "Введение в педагогику",
+                description: "1232",
+                photo: "https://www.phoenix.edu/content/dam/edu/blog/2023/02/Male-programmer-writing-code-in-modern-office-704x421.jpg",
+                difficultID: 1
+              ),
             ),
             const SizedBox(
               height: 10,
             ),
             CourseTile(
               imageUrl:
-                  "https://sun21-1.userapi.com/impf/c845416/v845416977/26a4f/CNX79ySOb5I.jpg?size=449x600&quality=96&sign=31e9ffb131656175e52b6d448e57e401&type=album",
-              courseName: "Python для змеюк",
-              completedPercents: "78%",
-              course: CoursesList[1],
-            )
+                  "https://images.spiceworks.com/wp-content/uploads/2023/05/17141122/Shutterstock_2079263023.jpg",
+              courseName: "С# для маленьких и дебилов",
+              completedPercents: "74%",
+              course: Course(
+                id: 2,
+                name: "Педагогический дизайн урока",
+                description: "1232",
+                photo: "https://www.limestone.edu/sites/default/files/styles/news_preview_image/public/2022-03/computer-programmer.jpg?h=2d4b268f&itok=JOcIEe9u",
+                difficultID: 1
+              ),
+            ),
           ],
         ),
       ))),

@@ -1,12 +1,20 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:diplom/Models/DatabaseClasses/course.dart';
+import 'package:diplom/Models/LessonTypes.dart';
 import 'package:diplom/Screens/LessonTest_Screen.dart';
+import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
+import 'package:diplom/Services/blocs/loadBloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class CourseLearnScreen extends StatefulWidget {
   final Course course;
+
   const CourseLearnScreen({super.key, required this.course});
 
   @override
@@ -14,6 +22,34 @@ class CourseLearnScreen extends StatefulWidget {
 }
 
 class _CourseLearnScreenState extends State<CourseLearnScreen> {
+  List<Module> modules = [];
+  List<Lesson> lessons = [];
+  loadBloc loadbloc = loadBloc();
+
+  _loadModules() async {
+    try {
+      modules = await Api().loadModules(this.widget.course.id);
+
+      modules.sort(((a, b) {
+        return a.moduleName.compareTo(b.moduleName);
+      }));
+      for (var module in modules) {
+        lessons.addAll(await Api().loadLessons(module.id));
+      }
+      loadbloc.add(LoadLoaded());
+      setState(() {});
+    } catch (err) {
+      GetIt.I.get<Talker>().critical('Failed to load modules ${err}');
+      loadbloc.add(LoadFailedLoading());
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadModules();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,55 +116,108 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                   ),
                 ),
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    var module = widget.course.modules[index];
-                    return ExpansionTile(
-                      title: Text(
-                        "${index + 1}. ${module.moduleName}",
-                        style:
-                            TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
-                      ),
-                      children: module.lessons.map((lesson) {
-                        return ListTile(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => LessonTestScreen() ));
-                          },
-                          subtitle: Text(
-                            lessonNames[lesson.type] ?? 'None',
-                            style: TextStyle(
-                                color: Colors.black.withOpacity(0.5),
-                                fontFamily: 'Comic Sans'),
-                          ),
+              SliverToBoxAdapter(
+                child: BlocBuilder(
+                  bloc: loadbloc,
+                  builder: (context, state) {
+                    if (state is Loaded) {
+                      return Column(
+                          children: modules.map((e) {
+                        final moduleLessons = lessons
+                            .where((element) => element.moduleID == e.id);
+                        return ExpansionTile(
                           title: Text(
-                            lesson.lessonName,
+                            e.moduleName,
                             style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'Comic Sans',
-                                fontSize: 20),
+                                fontFamily: 'Comic Sans', fontSize: 20),
                           ),
-                          trailing: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.green, width: 2),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.green,
-                              size: 40,
-                            ),
-                          ),
-                          leading:
-                              Icon(Icons.school_outlined, color: Colors.blue),
+                          children: moduleLessons
+                              .map((e) => ListTile(
+                                    subtitle: Text(
+                                      lessonNames[e.type] ?? 'None',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.5),
+                                          fontFamily: 'Comic Sans'),
+                                    ),
+                                    title: Text(
+                                      e.name,
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontFamily: 'Comic Sans'),
+                                    ),
+                                    leading: Icon(Icons.school_outlined,
+                                        color: Colors.blue),
+                                  ))
+                              .toList(),
                         );
-                      }).toList(),
-                    );
+                      }).toList());
+                    } else if (state is Loading) {
+                      return Container(
+                          width: double.infinity,
+                          height: 100,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ));
+                    } else if (state is FailedLoading) {
+                      return Container(
+                        width: double.infinity,
+                        height: 100,
+                        child: Center(
+                          child: Text(
+                            "Failed load",
+                            style: TextStyle(
+                                fontFamily: 'Comic Sans', fontSize: 20),
+                          ),
+                        ),
+                      );
+                    }
+                    return Container();
                   },
-                  childCount: widget.course.modules.length,
                 ),
               ),
+              // SliverList(
+              //   delegate: SliverChildBuilderDelegate(
+              //     (BuildContext context, int index) {
+              //       var module = widget.course.modules[index];
+              //       return ExpansionTile(
+              //         title: Text(
+              //           "${index + 1}. ${module.moduleName}",
+              //           style:
+              //               TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
+              //         ),
+              //         children: module.lessons.map((lesson) {
+              //           return ListTile(
+              //             onTap: () {
+              //               Navigator.push(
+              //                   context,
+              //                   MaterialPageRoute(
+              //                       builder: (context) => LessonTestScreen()));
+              //             },
+              //             subtitle: Text(
+              //               lessonNames[lesson.type] ?? 'None',
+              //               style: TextStyle(
+              //                   color: Colors.black.withOpacity(0.5),
+              //                   fontFamily: 'Comic Sans'),
+              //             ),
+              //             title: Text(
+              //               lesson.lessonName,
+              //               style: TextStyle(
+              //                   color: Colors.black,
+              //                   fontFamily: 'Comic Sans',
+              //                   fontSize: 20),
+              //             ),
+              //             trailing: LessonCompleteTypeWidget(
+              //               LessonTypes: LessonStateTypes.Completed,
+              //             ),
+              //             leading:
+              //                 Icon(Icons.school_outlined, color: Colors.blue),
+              //           );
+              //         }).toList(),
+              //       );
+              //     },
+              //     childCount: widget.course.modules.length,
+              //   ),
+              // ),
               SliverToBoxAdapter(
                 child: Column(
                   children: [
@@ -193,5 +282,54 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
         ]),
       ),
     );
+  }
+}
+
+class LessonCompleteTypeWidget extends StatelessWidget {
+  final LessonStateTypes LessonTypes;
+
+  const LessonCompleteTypeWidget(
+      {super.key, required LessonStateTypes this.LessonTypes});
+
+  @override
+  Widget build(BuildContext context) {
+    if (LessonTypes == LessonStateTypes.Current) {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue, width: 2),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Icon(
+          Icons.arrow_right_rounded,
+          color: Colors.blue,
+          size: 40,
+        ),
+      );
+    } else if (LessonTypes == LessonStateTypes.Completed) {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.green, width: 2),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Icon(
+          Icons.check,
+          color: Colors.green,
+          size: 40,
+        ),
+      );
+    } else if (LessonTypes == LessonStateTypes.Blocked) {
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Icon(
+          Icons.lock_outline_rounded,
+          color: Colors.black,
+          size: 40,
+        ),
+      );
+    }
+    return Container();
   }
 }

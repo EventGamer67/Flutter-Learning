@@ -1,8 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Screens/Course_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class CoursesGallery_Screen extends StatefulWidget {
   const CoursesGallery_Screen({super.key});
@@ -16,8 +18,11 @@ class _CoursesGallery_ScreenState extends State<CoursesGallery_Screen> {
 
   @override
   void initState() {
-    coursesList = CoursesList;
     super.initState();
+    coursesList = GetIt.I.get<Data>().Courses;
+    coursesList.sort((a, b) {
+      return a.name.compareTo(b.name);
+    });
   }
 
   @override
@@ -25,20 +30,27 @@ class _CoursesGallery_ScreenState extends State<CoursesGallery_Screen> {
     return Scaffold(
       body: SafeArea(
           child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal:20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: SingleChildScrollView(
           child: Column(children: [
-            Text("Все курсы",style: TextStyle(fontFamily: 'Comic Sans', fontSize: 30, color: Color.fromARGB(255, 52, 152, 219)),),
+            Text(
+              "Все курсы",
+              style: TextStyle(
+                  fontFamily: 'Comic Sans',
+                  fontSize: 30,
+                  color: Color.fromARGB(255, 52, 152, 219)),
+            ),
             ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-                itemCount: CoursesList.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: coursesList.length,
                 itemBuilder: ((context, index) {
                   return AllCoursesTile(
-                    courseName: CoursesList[index].name,
-                    difficult: CoursesList[index].difficult,
-                    imageURL: CoursesList[index].photo,
-                    course: CoursesList[index],
+                    courseName: coursesList[index].name,
+                    difficult:
+                        "Уровень: ${getCourseDifficultByID(coursesList[index].difficultID)!.name.toString()}",
+                    imageURL: coursesList[index].photo,
+                    course: coursesList[index],
                   );
                 })),
           ]),
@@ -70,7 +82,7 @@ class AllCoursesTile extends StatelessWidget {
           MaterialPageRoute(builder: (context) {
             return CourseScreen(
               course: this.course,
-            ); // Make sure to return the CourseScreen widget
+            );
           }),
         );
       },
@@ -95,7 +107,7 @@ class AllCoursesTile extends StatelessWidget {
                             child: Text(
                               courseName,
                               style: TextStyle(
-                                  shadows: [
+                                  shadows: const [
                                     Shadow(color: Colors.black, blurRadius: 40)
                                   ],
                                   color: Colors.white,
@@ -108,7 +120,7 @@ class AllCoursesTile extends StatelessWidget {
                             child: Text(
                               difficult,
                               style: TextStyle(
-                                  shadows: [
+                                  shadows: const [
                                     Shadow(color: Colors.black, blurRadius: 40)
                                   ],
                                   color: Colors.white,
