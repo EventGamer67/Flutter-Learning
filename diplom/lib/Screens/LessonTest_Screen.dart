@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class LessonTestScreen extends StatefulWidget {
@@ -14,7 +13,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 60,
-          backgroundColor: Color.fromARGB(255, 52, 152, 219).withOpacity(0.6),
+          backgroundColor: const Color.fromARGB(255, 52, 152, 219).withOpacity(0.6),
         ),
         body: SafeArea(
           child: Stack(children: [
@@ -22,100 +21,100 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  "Вопрос 1.2",
+                const Text(
+                  "Функции органов                        ",
                   style: TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
                 ),
                 Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     alignment: Alignment.center,
-                    child: Text(
-                      "Чем профессиональная педагогическая деятельность отличается от непрофессиональной?",
+                    child: const Text(
+                      "Какая функция относится к работе почек?",
                       textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
                     )),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
-                              color: Color.fromARGB(255, 52, 152, 219),
+                              color: const Color.fromARGB(255, 52, 152, 219),
                             )),
                         child: ListTile(
                           onTap: () {},
-                          title: Text(
-                              "Осуществляется в специально созданных условиях",
+                          title: const Text(
+                              "Продуцирование желчи",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
-                              color: Color.fromARGB(255, 52, 152, 219),
+                              color: const Color.fromARGB(255, 52, 152, 219),
                             )),
                         child: ListTile(
                           onTap: () {},
-                          title: Text(
-                              "Гарантирует высокий результат деятельности",
+                          title: const Text(
+                              "Фильтрация крови",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
-                              color: Color.fromARGB(255, 52, 152, 219),
+                              color: const Color.fromARGB(255, 52, 152, 219),
                             )),
                         child: ListTile(
                           onTap: () {},
-                          title: Text(
-                              "Предполагает наличие профессионального образования у педагога",
+                          title: const Text(
+                              "Управление температурой тела",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderRadius: const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
-                              color: Color.fromARGB(255, 52, 152, 219),
+                              color: const Color.fromARGB(255, 52, 152, 219),
                             )),
                         child: ListTile(
                           onTap: () {},
-                          title: Text(
-                              "Осуществляется по специально разработанным программам",
+                          title: const Text(
+                              "Синтез инсулина",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Container(
                         height: 60,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             color: Color.fromARGB(255, 52, 152, 219),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(40))),
-                        child: Center(
+                        child: const Center(
                           child: Text("Далее",
                               style: TextStyle(
                                   fontFamily: 'Comic Sans',

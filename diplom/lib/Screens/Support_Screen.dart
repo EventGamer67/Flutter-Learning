@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -36,7 +34,8 @@ class _SupportSreenState extends State<SupportSreen> {
   final chatBloc bloc = chatBloc();
 
   void loadMessages() async {
-    messagesNew = await Api().loadMessages(GetIt.I.get<Data>().user!.id);
+    messagesNew = await Api().loadMessages(GetIt.I.get<Data>().user.id);
+    messagesNew.sort((a,b) { return a.id > b.id ? -1 : 1; } );
     bloc.add(ChatLoaded());
   }
 
@@ -52,7 +51,7 @@ class _SupportSreenState extends State<SupportSreen> {
       final SupabaseClient sup = GetIt.I.get<Supabase>().client;
       final result = await sup.from('Messages').insert({
         'message': '$text',
-        'senderID': '${data.user!.id}',
+        'senderID': '${data.user.id}',
         'takerID': '${-1}',
         'created_at': '${DateTime.now()}'
       });
@@ -63,15 +62,17 @@ class _SupportSreenState extends State<SupportSreen> {
     }
 
     _textController.clear();
-    ChatMessage message = ChatMessage(
-        message: text,
-        isSentByMe: true,
-        last: false,
-        senderName: data.user!.name); // Creating a message
+    Message message = Message(
+      message: text,
+      id: -1,
+      senderID: 1,
+      takerID: -1,
+      created_at: DateTime.now(),
+    );
 
-    // setState(() {
-    //   messagesNew.insert(0, message); // Inserting the message  in the list
-    // });
+    setState(() {
+      messagesNew.insert(0, message); // Inserting the message  in the list
+    });
   }
 
   Widget _buildChatList() {
@@ -89,14 +90,14 @@ class _SupportSreenState extends State<SupportSreen> {
   Widget _buildMessage(Message message) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      alignment: message.id == 1 ? Alignment.topRight : Alignment.topLeft,
+      alignment: message.senderID == 1 ? Alignment.topRight : Alignment.topLeft,
       child: Column(
         crossAxisAlignment:
-            message.id == 1 ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            message.senderID == 1 ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
-            message.id.toString(),
-            style: TextStyle(fontFamily: 'Comic Sans'),
+            message.senderID == 1 ? "Вы" : "Администратор",
+            style: const TextStyle(fontFamily: 'Comic Sans'),
           ),
           Container(
             width: MediaQuery.of(context).size.width *
@@ -106,16 +107,16 @@ class _SupportSreenState extends State<SupportSreen> {
               border: Border.all(
                   width: 2,
                   color:
-                      (message.id == 1 ? Colors.blue[100] : Colors.grey[200])!
+                      (message.senderID == 1 ? Colors.blue[100] : Colors.grey[200])!
                           .withOpacity(1)),
-              color: message.id == 1 ? Colors.blue[100] : Colors.grey[200],
+              color: message.senderID == 1 ? Colors.blue[100] : Colors.grey[200],
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 child: Text(
                   message.message,
-                  textAlign: message.id == 1 ? TextAlign.end : TextAlign.start,
+                  textAlign: message.senderID == 1 ? TextAlign.end : TextAlign.start,
                   style:
                       const TextStyle(fontSize: 16.0, fontFamily: 'Comic Sans'),
                 ),
@@ -150,13 +151,13 @@ class _SupportSreenState extends State<SupportSreen> {
                     if (state is Loaded) {
                       return _buildChatList();
                     } else if (state is Loading) {
-                      return Flexible(
+                      return const Flexible(
                         child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       );
                     } else if (state is FailedLoading) {
-                      return Flexible(
+                      return const Flexible(
                         child: Center(
                           child: Text("Failed"),
                         ),

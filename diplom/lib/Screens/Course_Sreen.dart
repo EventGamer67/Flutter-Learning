@@ -1,6 +1,7 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, unnecessary_this
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
+import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
@@ -27,13 +28,13 @@ class _CourseScreenState extends State<CourseScreen> {
   _loadModules() async {
     try {
       alreadyRegistered = await Api().userRegisteredToCourse(
-          widget.course.id, GetIt.I.get<Data>().user!.id);
+          widget.course.id, GetIt.I.get<Data>().user.id);
 
       modules = await Api()
           .loadModules(this.widget.course.id);
 
       modules.sort(((a, b) {
-        return a.moduleName.compareTo(b.moduleName);
+        return a.name.compareTo(b.name);
       }));
       for (var module in modules) {
         lessons.addAll(await Api().loadLessons(module.id));
@@ -121,14 +122,14 @@ class _CourseScreenState extends State<CourseScreen> {
                             .where((element) => element.moduleID == e.id);
                         return ExpansionTile(
                           title: Text(
-                            e.moduleName,
+                            e.name,
                             style: TextStyle(
                                 fontFamily: 'Comic Sans', fontSize: 20),
                           ),
                           children: moduleLessons
                               .map((e) => ListTile(
                                     subtitle: Text(
-                                      lessonNames[e.type] ?? 'None',
+                                      e.getLessonTypeName(),
                                       style: TextStyle(
                                           color: Colors.black.withOpacity(0.5),
                                           fontFamily: 'Comic Sans'),
@@ -146,14 +147,14 @@ class _CourseScreenState extends State<CourseScreen> {
                         );
                       }).toList());
                     } else if (state is Loading) {
-                      return Container(
+                      return SizedBox(
                           width: double.infinity,
                           height: 100,
                           child: Center(
                             child: CircularProgressIndicator(),
                           ));
                     } else if (state is FailedLoading) {
-                      return Container(
+                      return SizedBox(
                         width: double.infinity,
                         height: 100,
                         child: Center(

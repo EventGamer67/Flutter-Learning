@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+  // ignore_for_file: prefer_const_constructors
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Screens/Course_Sreen.dart';
@@ -81,7 +81,7 @@ class AllCoursesTile extends StatelessWidget {
           context,
           MaterialPageRoute(builder: (context) {
             return CourseScreen(
-              course: this.course,
+              course: course,
             );
           }),
         );

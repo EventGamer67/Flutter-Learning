@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           selectedLabelStyle: TextStyle(fontFamily: 'Comic Sans'),
           unselectedLabelStyle: TextStyle(fontFamily: 'Comic Sans'),
         ),
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 52, 152, 219)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 52, 152, 219)),
         useMaterial3: true,
       ),
       home: const AuthrorizationScreen(),

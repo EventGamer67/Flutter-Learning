@@ -1,7 +1,12 @@
 import 'package:diplom/Models/DatabaseClasses/course.dart';
+import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Screens/Courselearn_Screen.dart';
+import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
+import 'package:diplom/Services/blocs/loadBloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class MyCoursesScreen extends StatefulWidget {
   const MyCoursesScreen({super.key});
@@ -11,6 +16,33 @@ class MyCoursesScreen extends StatefulWidget {
 }
 
 class _MyCoursesScreenState extends State<MyCoursesScreen> {
+  List<Course> courses = [];
+  loadBloc loadbloc = loadBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCourses();
+  }
+
+  _loadCourses() async {
+    try {
+      courses = await Api()
+          .getUserCourses(GetIt.I.get<Data>().user.id)
+          .timeout(const Duration(seconds: 5));
+
+      for(Course course in courses) {
+        course.modules = await Api().loadModules(course.id);
+        for(Module module in course.modules){
+          module.lessons = await Api().loadLessons(module.id);
+        }
+      }
+      loadbloc.add(LoadLoaded());
+    } catch (err) {
+      loadbloc.add(LoadFailedLoading());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,35 +95,33 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
             const SizedBox(
               height: 10,
             ),
-            CourseTile(
-              imageUrl:
-                  "https://images.spiceworks.com/wp-content/uploads/2023/05/17141122/Shutterstock_2079263023.jpg",
-              courseName: "С# для маленьких и дебилов",
-              completedPercents: "74%",
-              course: Course(
-                id: 1,
-                name: "Введение в педагогику",
-                description: "1232",
-                photo: "https://www.phoenix.edu/content/dam/edu/blog/2023/02/Male-programmer-writing-code-in-modern-office-704x421.jpg",
-                difficultID: 1
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            CourseTile(
-              imageUrl:
-                  "https://images.spiceworks.com/wp-content/uploads/2023/05/17141122/Shutterstock_2079263023.jpg",
-              courseName: "С# для маленьких и дебилов",
-              completedPercents: "74%",
-              course: Course(
-                id: 2,
-                name: "Педагогический дизайн урока",
-                description: "1232",
-                photo: "https://www.limestone.edu/sites/default/files/styles/news_preview_image/public/2022-03/computer-programmer.jpg?h=2d4b268f&itok=JOcIEe9u",
-                difficultID: 1
-              ),
-            ),
+            BlocBuilder(
+                bloc: loadbloc,
+                builder: ((context, state) {
+                  if (state is Loaded) {
+                    return Column(
+                        children: courses
+                            .map((e) => CourseTile(
+                                  course: e,
+                                ))
+                            .toList());
+                  } else if (state is Loading) {
+                    return const SizedBox(
+                      height: 100,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    );
+                  } else if (state is FailedLoading) {
+                    return const SizedBox(
+                      height: 100,
+                      child: Center(
+                        child: Text("Failed Load"),
+                      ),
+                    );
+                  }
+                  return Container();
+                })),
           ],
         ),
       ))),
@@ -100,54 +130,61 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
 }
 
 class CourseTile extends StatelessWidget {
-  final imageUrl;
-  final courseName;
-  final completedPercents;
   final Course course;
 
   const CourseTile(
-      {super.key, this.imageUrl, this.courseName, this.completedPercents, required this.course});
+      {super.key,
+      required this.course});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) { return CourseLearnScreen(course: course); }));
-      },
-      child: Container(
-        alignment: Alignment.topLeft,
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-            image: DecorationImage(
-                fit: BoxFit.cover, image: NetworkImage(course.photo)),
-            border: Border.all(
-                width: 3, color: const Color.fromARGB(255, 52, 152, 219))),
-        child: AspectRatio(
-          aspectRatio: 4 / 2.5,
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Stack(children: [
-              Text(course.name,
-                  style: const TextStyle(
-                    shadows: [Shadow(color: Colors.black,blurRadius: 40)],
-                      fontSize: 24,
-                      fontFamily: 'Comic Sans',
-                      color: Colors.white)),
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Text(
-                  completedPercents ?? "100%",
-                  style: const TextStyle(
-                    shadows: [Shadow(color: Colors.black,blurRadius: 40)],
-                      fontSize: 24,
-                      fontFamily: 'Comic Sans',
-                      color: Colors.white),
-                ),
-              )
-            ]),
+    double completedPercents = course.getLessonCompleteCount()/course.getLessonCount();
+    course.progress = completedPercents;
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return CourseLearnScreen(course: course);
+            }));
+          },
+          child: Container(
+            alignment: Alignment.topLeft,
+            decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(20)),
+                image: DecorationImage(
+                    fit: BoxFit.cover, image: NetworkImage(course.photo)),
+                border: Border.all(
+                    width: 3, color: const Color.fromARGB(255, 52, 152, 219))),
+            child: AspectRatio(
+              aspectRatio: 4 / 2.5,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Stack(children: [
+                  Text(course.name,
+                      style: const TextStyle(
+                          shadows: [Shadow(color: Colors.black, blurRadius: 40)],
+                          fontSize: 24,
+                          fontFamily: 'Comic Sans',
+                          color: Colors.white)),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      "Прогресс: ${(completedPercents*100).floor().toString()}%",
+                      style: const TextStyle(
+                          shadows: [Shadow(color: Colors.black, blurRadius: 40)],
+                          fontSize: 24,
+                          fontFamily: 'Comic Sans',
+                          color: Colors.white),
+                    ),
+                  )
+                ]),
+              ),
+            ),
           ),
         ),
-      ),
+        SizedBox(height: 15,)
+      ],
     );
   }
 }

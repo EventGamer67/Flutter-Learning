@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:diplom/Services/Data.dart';
+
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class Module {
   int id;
   int courseID;
   String name;
+  List<Lesson> lessons = [];
   Module({
     required this.id,
     required this.courseID,

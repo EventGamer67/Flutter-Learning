@@ -9,6 +9,8 @@ class MyUser {
   String email;
   String avatarURL;
   DateTime registerDate;
+  List<int> completedLessonsID = [];
+
   MyUser({
     required this.id,
     required this.RoleID,

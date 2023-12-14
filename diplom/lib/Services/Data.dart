@@ -2,16 +2,25 @@
 
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-import 'package:diplom/Models/DatabaseClasses/User.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
+import 'package:diplom/Models/DatabaseClasses/user.dart';
 
 class Data {
   List<Course> Courses = [];
   List<DifficultTypes> difficults = [];
-  MyUser? user = null;
+  List<LessonType> lessonTypes = [];
+  MyUser user = MyUser(
+      id: 1,
+      RoleID: 1,
+      password: '',
+      name: '',
+      email: '',
+      avatarURL: '',
+      registerDate: DateTime.now());
 }
 
 DifficultTypes? getCourseDifficultByID(int id) {
@@ -22,36 +31,38 @@ DifficultTypes? getCourseDifficultByID(int id) {
       .first;
 }
 
-class Module {
+class LessonType {
   int id;
-  int courseID;
-  String moduleName;
-  Module({
+  String name;
+  LessonType({
     required this.id,
-    required this.courseID,
-    required this.moduleName,
+    required this.name,
   });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'courseID': courseID,
-      'moduleName': moduleName,
+      'name': name,
     };
   }
 
-  factory Module.fromMap(Map<String, dynamic> map) {
-    return Module(
+  factory LessonType.fromMap(Map<String, dynamic> map) {
+    return LessonType(
       id: map['id'] as int,
-      courseID: map['courseID'] as int,
-      moduleName: map['name'] as String,
+      name: map['name'] as String,
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Module.fromJson(String source) =>
-      Module.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory LessonType.fromJson(String source) =>
+      LessonType.fromMap(json.decode(source) as Map<String, dynamic>);
+}
+
+enum LessonStateTypes {
+  Blocked,
+  Completed,
+  Current,
 }
 
 class Lesson {
@@ -65,6 +76,42 @@ class Lesson {
     required this.name,
     required this.type,
   });
+
+  LessonStateTypes getLessonState() {
+    final Data data = GetIt.I.get<Data>();
+    if (data.user.completedLessonsID.contains(id)) {
+      return LessonStateTypes.Completed;
+    } else if (data.user.completedLessonsID.contains(id - 1)) {
+      return LessonStateTypes.Current;
+    }
+    return LessonStateTypes.Blocked;
+  }
+
+  String getLessonTypeName() {
+    return GetIt.I
+        .get<Data>()
+        .lessonTypes
+        .where((element) => element.id == type)
+        .first
+        .name;
+  }
+
+  Icon getLessonTypeIcon() {
+    switch (type) {
+      case (1):
+        return const Icon(
+          Icons.school_outlined,
+          color: Color.fromARGB(255, 52, 152, 219),
+        );
+      case (2):
+        return const Icon(Icons.mode_edit,
+            color: Color.fromARGB(255, 52, 152, 219));
+      case (3):
+        return const Icon(Icons.slideshow,
+            color: Color.fromARGB(255, 52, 152, 219));
+    }
+    return const Icon(Icons.abc);
+  }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -86,113 +133,6 @@ class Lesson {
 
   String toJson() => json.encode(toMap());
 
-  factory Lesson.fromJson(String source) => Lesson.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Lesson.fromJson(String source) =>
+      Lesson.fromMap(json.decode(source) as Map<String, dynamic>);
 }
-
-enum LessonType {
-  test,
-  lesson,
-  exam,
-}
-
-Map<LessonType, String> lessonNames = {
-  LessonType.test: "Тест",
-  LessonType.lesson: "Урок",
-  LessonType.exam: "Экзамен",
-};
-
-// List<Course> CoursesList = [
-//     Course(
-//         name: "Введение в педагогику для школьников",
-//         modules: [
-//           Module(moduleName: "Педагогика как практика", lessons: [
-//             Lesson(lessonName: "Тест 1.1"),
-//             Lesson(lessonName: "Тест 1.2"),
-//             Lesson(lessonName: "Тест 1.3")
-//           ]),
-//           Module(moduleName: "Педагогика как наука", lessons: [
-//             Lesson(lessonName: "Тест 2.1"),
-//             Lesson(lessonName: "Тест 2.2"),
-//             Lesson(lessonName: "Тест 2.3")
-//           ]),
-//           Module(moduleName: "Педагогика как искусство", lessons: [
-//             Lesson(lessonName: "Тест 3.1"),
-//             Lesson(lessonName: "Тест 3.2"),
-//             Lesson(lessonName: "Тест 3.3")
-//           ]),
-//           Module(
-//               moduleName: "Профессиональная деятельность педагога",
-//               lessons: [
-//                 Lesson(lessonName: "Тест 3.1"),
-//                 Lesson(lessonName: "Тест 3.2"),
-//                 Lesson(lessonName: "Тест 3.3")
-//               ])
-//         ],
-//         description:
-//             "Курс дает представление об основах деятельности педагога и требованиях к его умениям и качествам. На конкретных ситуациях, представленных в виде текстов и видео, показаны такие виды деятельности и компоненты педагогического мастерства учителя, как подготовка к уроку, оценивание деятельности учащихся, педагогическая рефлексия, интуиция, эмпатия.",
-//         photo:
-//             "https://www.phoenix.edu/content/dam/edu/blog/2023/02/Male-programmer-writing-code-in-modern-office-704x421.jpg",
-//         difficult: "Начальный уровень"),
-//     Course(
-//         name: "Педагогический дизайн урока",
-//         modules: [
-//           Module(moduleName: "Педагогика как практика", lessons: [
-//             Lesson(lessonName: "Тест 1.1"),
-//             Lesson(lessonName: "Тест 1.2"),
-//             Lesson(lessonName: "Тест 1.3")
-//           ]),
-//           Module(moduleName: "Педагогика как наука", lessons: [
-//             Lesson(lessonName: "Тест 2.1"),
-//             Lesson(lessonName: "Тест 2.2"),
-//             Lesson(lessonName: "Тест 2.3")
-//           ]),
-//           Module(moduleName: "Педагогика как искусство", lessons: [
-//             Lesson(lessonName: "Тест 3.1"),
-//             Lesson(lessonName: "Тест 3.2"),
-//             Lesson(lessonName: "Тест 3.3")
-//           ]),
-//           Module(
-//               moduleName: "Профессиональная деятельность педагога",
-//               lessons: [
-//                 Lesson(lessonName: "Тест 3.1"),
-//                 Lesson(lessonName: "Тест 3.2"),
-//                 Lesson(lessonName: "Тест 3.3")
-//               ])
-//         ],
-//         description:
-//             "Увлекательное путешествие в педагогический дизайн – это уникальная возможность для учителя и его учеников «примерить» на себя новые смыслы-роли: дизайнера, технолога, инженера, сценариста, режиссера, актера, навигатора и даже геймера.",
-//         photo:
-//             "https://www.limestone.edu/sites/default/files/styles/news_preview_image/public/2022-03/computer-programmer.jpg?h=2d4b268f&itok=JOcIEe9u",
-//         difficult: "Средний уровень"),
-//     Course(
-//         name: "Компьютерная лингводидактика",
-//         modules: [
-//           Module(moduleName: "Педагогика как практика", lessons: [
-//             Lesson(lessonName: "Тест 1.1"),
-//             Lesson(lessonName: "Тест 1.2"),
-//             Lesson(lessonName: "Тест 1.3")
-//           ]),
-//           Module(moduleName: "Педагогика как наука", lessons: [
-//             Lesson(lessonName: "Тест 2.1"),
-//             Lesson(lessonName: "Тест 2.2"),
-//             Lesson(lessonName: "Тест 2.3")
-//           ]),
-//           Module(moduleName: "Педагогика как искусство", lessons: [
-//             Lesson(lessonName: "Тест 3.1"),
-//             Lesson(lessonName: "Тест 3.2"),
-//             Lesson(lessonName: "Тест 3.3")
-//           ]),
-//           Module(
-//               moduleName: "Профессиональная деятельность педагога",
-//               lessons: [
-//                 Lesson(lessonName: "Тест 3.1"),
-//                 Lesson(lessonName: "Тест 3.2"),
-//                 Lesson(lessonName: "Тест 3.3")
-//               ])
-//         ],
-//         description:
-//             "Компьютерная лингводидактика является междисциплинарной областью знания и тесно взаимодействует с развитием информа­ционных технологий, прикладной и математической лингвистики, разработками в области искусственного интеллекта, дизайна ком­пьютерных программ, исследований взаимодействия «человек — компьютер», теорией и практикой компьютерного обучения в це­лом.",
-//         photo:
-//             "https://storecms.blob.core.windows.net/uploads/51b69245-62b1-4889-af1f-1a498bd995ca-young-man-coding.jpg",
-//         difficult: "Средний уровень"),
-//   ];

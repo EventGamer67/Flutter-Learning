@@ -54,7 +54,7 @@ class MyTextField extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: Colors.white     
               ),
-              child: Center(child: Icon(icon, size: 36, color: Color.fromARGB(255, 52, 152, 219)))
+              child: Center(child: Icon(icon, size: 36, color: const Color.fromARGB(255, 52, 152, 219)))
               ),
             ),
           ),

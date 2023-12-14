@@ -31,13 +31,13 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
           context: context,
           builder: (BuildContext context) {
             return CupertinoAlertDialog(
-              title: Text(
+              title: const Text(
                 "Ошибка",
                 style: TextStyle(fontFamily: 'Comic Sans'),
               ),
               actions: [
                 CupertinoButton(
-                    child: Text("Закрыть",
+                    child: const Text("Закрыть",
                         style: TextStyle(fontFamily: 'Comic Sans')),
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -47,7 +47,8 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
           });
       return;
     }
-    GetIt.I.get<Data>().user = result;
+    final Data data = GetIt.I.get<Data>();
+    data.user = result;
     await Api().loadData();
     Navigator.pushReplacement(
       context,
@@ -58,7 +59,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 52, 152, 219),
+        backgroundColor: const Color.fromARGB(255, 52, 152, 219),
         body: SafeArea(
             child: Container(
           decoration: const BoxDecoration(
@@ -71,10 +72,10 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    "Цифровое искусство",
+                    "Самообразование",
                     style: TextStyle(
                         color: Color.fromARGB(255, 52, 152, 219),
-                        fontSize: 52,
+                        fontSize: 43,
                         fontFamily: 'Comic Sans'),
                     textAlign: TextAlign.center,
                   ),
