@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -12,38 +11,119 @@ import 'package:talker_flutter/talker_flutter.dart';
 
 class LessonScreen extends StatefulWidget {
   final Lesson lesson;
-  final bool completed;
+  final bool alreadyCompleted;
   const LessonScreen(
-      {super.key, required this.lesson, required this.completed});
+      {super.key, required this.lesson, required this.alreadyCompleted});
 
   @override
   State<LessonScreen> createState() => _LessonScreenState();
 }
 
 class _LessonScreenState extends State<LessonScreen> {
+  late final Timer timer;
+  double progressBarValue = 1.0;
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
+
+  _lessonCompleted() async {
+    try {
+      final respone = await GetIt.I
+          .get<Supabase>()
+          .client
+          .from('LessonsProgress')
+          .insert({
+        'LessonID': widget.lesson.id,
+        'UserID': GetIt.I.get<Data>().user.id
+      }, defaultToNull: true);
+      GetIt.I.get<Talker>().debug("sended $respone");
+      GetIt.I.get<Data>().user.completedLessonsID.add(widget.lesson.id);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Пройдено")));
+    } catch (err) {
+      GetIt.I.get<Talker>().critical("sended fail $err");
+    }
+  }
+
+  void _updateProgress(Timer timer) {
+    setState(() {
+      if (progressBarValue < 1.0) {
+        progressBarValue += 0.1; // Update the progress bar value here
+      } else {
+        timer.cancel(); // Cancel the timer when progress reaches 100%
+        _lessonCompleted();
+      }
+    });
+  }
+
+  _loadlesson() async {
+    if (!widget.alreadyCompleted) {
+      progressBarValue = 0;
+      timer = Timer.periodic(const Duration(seconds: 1), _updateProgress);
+    } else {
+      timer = Timer(const Duration(seconds: 0), () => null);
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadlesson();
+  }
+
   @override
   Widget build(BuildContext context) {
-    Widget selectedWidget;
-    switch (widget.lesson.type) {
-      case 1: //lection
-        selectedWidget = const Placeholder();
-        break;
-      case 2: //test
-        selectedWidget = const Placeholder();
-        break;
-      case 3: //video
-        selectedWidget = const Placeholder();
-        break;
-      default:
-        selectedWidget = const Placeholder();
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.lesson.name.toString()),
+        title: Column(
+          children: [
+            Text(widget.lesson.name.toString()),
+          ],
+        ),
       ),
       body: SafeArea(
-        child: selectedWidget,
+        child: Column(
+          children: [
+            LinearProgressIndicator(
+                color: Colors.green, value: progressBarValue),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Image.network(
+                      this.widget.lesson.media,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return SizedBox(
+                          height: 30,
+                          child: Center(
+                            child: Text("Изображение загружается"),
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return SizedBox(
+                          height: 30,
+                          child: Center(
+                            child: Text("Ошибка загрузки изображения"),
+                          ),
+                        );
+                      },
+                    ),
+                    Text(
+                      this.widget.lesson.text,
+                      style: TextStyle(fontSize: 18),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -209,53 +289,7 @@ class _ParsedLessonState extends State<ParsedLesson> {
         if (rawData is Map<String, dynamic>) {
           String header = rawData['Header'];
           List<dynamic> questions = rawData['Questions'];
-          widgets.add(Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                border: Border.all(color: Colors.blue, width: 2)),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Text(
-                    header,
-                    style: TextStyle(fontSize: 24),
-                  ),
-                  Column(
-                    children: questions.map((value) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(vertical: 5),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            border: Border.all(
-                                color: Colors.black.withAlpha(120), width: 2)),
-                        child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Text(
-                              "${value['text']}",
-                              style: TextStyle(fontSize: 18),
-                            )),
-                      );
-                    }).toList(),
-                  ),
-                  Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                            child: Text(
-                          "Проверить",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        )),
-                      )),
-                ],
-              ),
-            ),
-          ));
+          widgets.add(QuestionWidget(header: header, questions: questions));
         } else {
           print('Invalid data format: $rawData');
         }
@@ -308,6 +342,68 @@ class _ParsedLessonState extends State<ParsedLesson> {
               }
               return const Text("fail");
             }),
+      ),
+    );
+  }
+}
+
+class QuestionWidget extends StatelessWidget {
+  const QuestionWidget({
+    super.key,
+    required this.header,
+    required this.questions,
+  });
+
+  final String header;
+  final List questions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(20)),
+          border: Border.all(color: Colors.blue, width: 2)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              header,
+              style: const TextStyle(fontSize: 24),
+            ),
+            Column(
+              children: questions.map((value) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      border: Border.all(
+                          color: Colors.black.withAlpha(120), width: 2)),
+                  child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        "${value['text']}",
+                        style: const TextStyle(fontSize: 18),
+                      )),
+                );
+              }).toList(),
+            ),
+            Container(
+                width: double.infinity,
+                decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(20))),
+                child: const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Center(
+                      child: Text(
+                    "Проверить",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  )),
+                )),
+          ],
+        ),
       ),
     );
   }

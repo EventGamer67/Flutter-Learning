@@ -71,13 +71,15 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    "Самообразование",
-                    style: TextStyle(
-                        color: Color.fromARGB(255, 52, 152, 219),
-                        fontSize: 43,
-                        fontFamily: 'Comic Sans'),
-                    textAlign: TextAlign.center,
+                  const FittedBox(
+                    child: Text(
+                      "Самообразование",
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 52, 152, 219),
+                          fontSize: 43,
+                          fontFamily: 'Comic Sans'),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   const Text("Развитие навыков самообразования",
                       style: TextStyle(

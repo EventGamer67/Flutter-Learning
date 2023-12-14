@@ -85,7 +85,7 @@ class _CourseScreenState extends State<CourseScreen> {
                         textAlign: TextAlign.end,
                         style: TextStyle(
                           fontFamily: 'Comic Sans',
-                          shadows: [
+                          shadows: const [
                             Shadow(color: Colors.black, blurRadius: 40)
                           ],
                         ),

@@ -70,18 +70,24 @@ class Lesson {
   int moduleID;
   String name;
   int type;
+
+  String media = "";
+  String text = "";
+
   Lesson({
     required this.id,
     required this.moduleID,
     required this.name,
     required this.type,
+    required this.media,
+    required this.text
   });
 
-  LessonStateTypes getLessonState() {
+  LessonStateTypes getLessonState(List<Lesson> courseLessons) {
     final Data data = GetIt.I.get<Data>();
     if (data.user.completedLessonsID.contains(id)) {
       return LessonStateTypes.Completed;
-    } else if (data.user.completedLessonsID.contains(id - 1)) {
+    } else if ((id == courseLessons.first.id) || (data.user.completedLessonsID.contains(courseLessons.where((element) => element.id == id - 1).first.id))) {
       return LessonStateTypes.Current;
     }
     return LessonStateTypes.Blocked;
@@ -119,6 +125,8 @@ class Lesson {
       'moduleID': moduleID,
       'name': name,
       'type': type,
+      'text': text,
+      'media': media
     };
   }
 
@@ -128,6 +136,8 @@ class Lesson {
       moduleID: map['moduleID'] as int,
       name: map['name'] as String,
       type: map['type'] as int,
+      media: map['media'] as String,
+      text: map['text'] as String
     );
   }
 

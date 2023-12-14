@@ -44,7 +44,10 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
         return a.name.compareTo(b.name);
       }));
       for (var module in modules) {
-        lessons.addAll(await Api().loadLessons(module.id));
+        lessons.addAll(await Api().loadLessons(module.id)
+          ..sort(((a, b) {
+            return a.id.compareTo(b.id);
+          })));
       }
       loadbloc.add(LoadLoaded());
       setState(() {});
@@ -145,30 +148,47 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                           children: moduleLessons
                               .map((e) => ListTile(
                                   onTap: () async {
-                                    final lessonStateTypes = e.getLessonState();
+                                    final lessonStateTypes =
+                                        e.getLessonState(lessons);
                                     switch (lessonStateTypes) {
                                       case (LessonStateTypes.Current):
+                                        // await Navigator.push(context,
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) {
+                                        //   return ParsedLesson(
+                                        //       lesson: e,
+                                        //       alreadyCompleted: false);
+                                        // }));
+                                        // setState(() {});
                                         await Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (context) {
-                                          return ParsedLesson(
+                                          return LessonScreen(
                                               lesson: e,
                                               alreadyCompleted: false);
                                         }));
+                                        double completedPercents = this
+                                                .widget
+                                                .course
+                                                .getLessonCompleteCount() /
+                                            this.widget.course.getLessonCount();
+                                        this.widget.course.progress =
+                                            completedPercents;
                                         setState(() {});
                                       case (LessonStateTypes.Blocked):
-                                        Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return ParsedLesson(
-                                              lesson: e,
-                                              alreadyCompleted: false);
-                                        }));
+                                        () {};
                                       case (LessonStateTypes.Completed):
+                                        // await Navigator.push(context,
+                                        //     MaterialPageRoute(
+                                        //         builder: (context) {
+                                        //   return ParsedLesson(
+                                        //       lesson: e,
+                                        //       alreadyCompleted: true);
+                                        // }));
                                         await Navigator.push(context,
                                             MaterialPageRoute(
                                                 builder: (context) {
-                                          return ParsedLesson(
+                                          return LessonScreen(
                                               lesson: e,
                                               alreadyCompleted: true);
                                         }));
@@ -189,7 +209,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                         fontFamily: 'Comic Sans'),
                                   ),
                                   trailing: LessonCompleteTypeWidget(
-                                    LessonTypes: e.getLessonState(),
+                                    LessonTypes: e.getLessonState(lessons),
                                   ),
                                   leading: e.getLessonTypeIcon()))
                               .toList(),
@@ -360,12 +380,18 @@ class OpenedCertificate extends StatelessWidget {
                                         fontSize: 48))),
                             pw.Align(
                                 alignment: pw.Alignment(-1, -0.3),
-                                child: pw.Text(courseName,
-                                    textAlign: pw.TextAlign.left,
-                                    style: pw.TextStyle(
-                                        font: ttf,
-                                        color: PdfColor.fromHex("4472c4"),
-                                        fontSize: 48))),
+                                child: pw.Container(
+                                    width: 500,
+                                    height: 200,
+                                    child: pw.FittedBox(
+                                      fit: pw.BoxFit.scaleDown,
+                                        child: pw.Text(courseName,
+                                            textAlign: pw.TextAlign.left,
+                                            style: pw.TextStyle(
+                                                font: ttf,
+                                                color:
+                                                    PdfColor.fromHex("4472c4"),
+                                                fontSize: 48))))),
                             pw.Align(
                                 alignment: pw.Alignment(-1, -1),
                                 child: pw.Text(time,
@@ -486,8 +512,7 @@ class ClosedCertificate extends StatelessWidget {
 class LessonCompleteTypeWidget extends StatelessWidget {
   final LessonStateTypes LessonTypes;
 
-  const LessonCompleteTypeWidget(
-      {super.key, required this.LessonTypes});
+  const LessonCompleteTypeWidget({super.key, required this.LessonTypes});
 
   @override
   Widget build(BuildContext context) {
