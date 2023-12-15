@@ -121,11 +121,22 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                               style: TextStyle(
                                   fontSize: 24.0,
                                   fontFamily: 'Comic Sans',
+                                  shadows: [Shadow(color: Colors.black, blurRadius: 6)],
                                   color: Colors.white),
                             ),
                           ),
                         ],
-                      )
+                      ),
+                      Divider(),
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          'Модули:',
+                          textAlign: TextAlign.start,
+                          style:
+                              TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans', ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

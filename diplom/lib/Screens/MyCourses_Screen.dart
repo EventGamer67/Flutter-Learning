@@ -31,9 +31,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
           .getUserCourses(GetIt.I.get<Data>().user.id)
           .timeout(const Duration(seconds: 5));
 
-      for(Course course in courses) {
+      for (Course course in courses) {
         course.modules = await Api().loadModules(course.id);
-        for(Module module in course.modules){
+        for (Module module in course.modules) {
           module.lessons = await Api().loadLessons(module.id);
         }
       }
@@ -99,12 +99,25 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                 bloc: loadbloc,
                 builder: ((context, state) {
                   if (state is Loaded) {
-                    return Column(
-                        children: courses
-                            .map((e) => CourseTile(
-                                  course: e,
-                                ))
-                            .toList());
+                    return courses.length == 0  
+                        ? Container(
+                            height: 300,
+                            child: const Center(
+                              child: Text(
+                                "У вас нет записей на курсы",
+                                style: TextStyle(
+                                    fontSize: 24,
+                                    color: Color.fromARGB(255, 52, 152, 219),
+                                    fontFamily: 'Comic Sans'),
+                              ),
+                            ),
+                          )
+                        : Column(
+                            children: courses
+                                .map((e) => CourseTile(
+                                      course: e,
+                                    ))
+                                .toList());
                   } else if (state is Loading) {
                     return const SizedBox(
                       height: 100,
@@ -129,31 +142,37 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   }
 }
 
-class CourseTile extends StatelessWidget {
+class CourseTile extends StatefulWidget {
   final Course course;
 
-  const CourseTile(
-      {super.key,
-      required this.course});
+  const CourseTile({super.key, required this.course});
 
   @override
+  State<CourseTile> createState() => _CourseTileState();
+}
+
+class _CourseTileState extends State<CourseTile> {
+  @override
   Widget build(BuildContext context) {
-    double completedPercents = course.getLessonCompleteCount()/course.getLessonCount();
-    course.progress = completedPercents;
+    double completedPercents =
+        widget.course.getLessonCompleteCount() / widget.course.getLessonCount();
+    widget.course.progress = completedPercents;
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return CourseLearnScreen(course: course);
+          onTap: () async {
+            await Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return CourseLearnScreen(course: widget.course);
             }));
+            setState(() {});
           },
           child: Container(
             alignment: Alignment.topLeft,
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 image: DecorationImage(
-                    fit: BoxFit.cover, image: NetworkImage(course.photo)),
+                    fit: BoxFit.cover,
+                    image: NetworkImage(widget.course.photo)),
                 border: Border.all(
                     width: 3, color: const Color.fromARGB(255, 52, 152, 219))),
             child: AspectRatio(
@@ -161,18 +180,22 @@ class CourseTile extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Stack(children: [
-                  Text(course.name,
+                  Text(widget.course.name,
                       style: const TextStyle(
-                          shadows: [Shadow(color: Colors.black, blurRadius: 40)],
+                          shadows: [
+                            Shadow(color: Colors.black, blurRadius: 40)
+                          ],
                           fontSize: 24,
                           fontFamily: 'Comic Sans',
                           color: Colors.white)),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
-                      "Прогресс: ${(completedPercents*100).floor().toString()}%",
+                      "Прогресс: ${(completedPercents * 100).floor().toString()}%",
                       style: const TextStyle(
-                          shadows: [Shadow(color: Colors.black, blurRadius: 40)],
+                          shadows: [
+                            Shadow(color: Colors.black, blurRadius: 40)
+                          ],
                           fontSize: 24,
                           fontFamily: 'Comic Sans',
                           color: Colors.white),
@@ -183,7 +206,9 @@ class CourseTile extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 15,)
+        SizedBox(
+          height: 15,
+        )
       ],
     );
   }

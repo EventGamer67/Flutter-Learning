@@ -37,7 +37,9 @@ class _CourseScreenState extends State<CourseScreen> {
         return a.name.compareTo(b.name);
       }));
       for (var module in modules) {
-        lessons.addAll(await Api().loadLessons(module.id));
+        lessons.addAll(await Api().loadLessons(module.id)..sort(((a, b) {
+          return a.name.compareTo(b.name);
+        })));
       }
       loadbloc.add(LoadLoaded());
       setState(() {
@@ -107,6 +109,15 @@ class _CourseScreenState extends State<CourseScreen> {
                             TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans'),
                       ),
                       Divider(),
+                      Container(
+                        alignment: Alignment.bottomLeft,
+                        child: Text(
+                          'Модули:',
+                          textAlign: TextAlign.start,
+                          style:
+                              TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans', ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -170,42 +181,6 @@ class _CourseScreenState extends State<CourseScreen> {
                   },
                 ),
               ),
-              // SliverList(
-              //   delegate: SliverChildBuilderDelegate(
-              //     (BuildContext context, int index) {
-              //       var module = modules[index];
-              //       return ExpansionTile(
-              //         title: Text(
-              //           "${index + 1}. ${module.moduleName}",
-              //           style:
-              //               TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
-              //         ),
-              //         // children: module.lessons.map((lesson) {
-              //         //   return ListTile(
-              //         //     subtitle: Text(
-              //         //       lessonNames[lesson.type] ?? 'None',
-              //         //       style: TextStyle(
-              //         //           color: Colors.black.withOpacity(0.5),
-              //         //           fontFamily: 'Comic Sans'),
-              //         //     ),
-              //         //     title: Text(
-              //         //       lesson.lessonName,
-              //         //       style: TextStyle(
-              //         //           color: Colors.black, fontFamily: 'Comic Sans'),
-              //         //     ),
-              //         //     // trailing: Icon(
-              //         //     //   Icons.check,
-              //         //     //   color: Colors.green,
-              //         //     // ),
-              //         //     leading:
-              //         //         Icon(Icons.school_outlined, color: Colors.blue),
-              //         //   );
-              //         // }).toList(),
-              //       );
-              //     },
-              //     childCount: widget.course.id,
-              //   ),
-              // ),
               SliverToBoxAdapter(
                 child: SizedBox(
                   height: 100,
@@ -237,8 +212,11 @@ class _CourseScreenState extends State<CourseScreen> {
                           ),
                           CupertinoDialogAction(
                             onPressed: () async {
-                              Api().registerUserToCourse(widget.course.id);
+                              await Api().registerUserToCourse(widget.course.id);
+                              alreadyRegistered = true;
                               Navigator.of(context).pop();
+                              setState(() {
+                              });
                             },
                             child: Text("Да",
                                 style: TextStyle(fontFamily: 'Comic Sans')),

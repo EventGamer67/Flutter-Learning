@@ -114,9 +114,12 @@ class _LessonScreenState extends State<LessonScreen> {
                         );
                       },
                     ),
-                    Text(
-                      this.widget.lesson.text,
-                      style: TextStyle(fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        this.widget.lesson.text,
+                        style: TextStyle(fontSize: 18),
+                      ),
                     )
                   ],
                 ),
