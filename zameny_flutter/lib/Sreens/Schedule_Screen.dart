@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 import 'package:zameny_flutter/Services/Data.dart';
 import 'package:zameny_flutter/Services/Tools.dart';
 import 'package:zameny_flutter/Widgets/CourseTile.dart';
@@ -37,19 +38,19 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     scrollController = ScrollController();
 
-    scrollController.addListener(() {
-      double ScrollPosition = scrollController.position.pixels;
+    // scrollController.addListener(() {
+    //   double ScrollPosition = scrollController.position.pixels;
 
-      keys.forEach((element) {
-        RenderObject? renderObject = element.currentContext?.findRenderObject();
-        if (renderObject != null && renderObject is RenderBox) {
-          Offset widgetPosition = renderObject.localToGlobal(Offset.zero);
-          // widgetPosition - это координаты верхнего левого угла виджета на экране
+    //   keys.forEach((element) {
+    //     RenderObject? renderObject = element.currentContext?.findRenderObject();
+    //     if (renderObject != null && renderObject is RenderBox) {
+    //       Offset widgetPosition = renderObject.localToGlobal(Offset.zero);
+    //       // widgetPosition - это координаты верхнего левого угла виджета на экране
 
-          print('Координаты виджета с ключом ${element}: $widgetPosition');
-        }
-      });
-    });
+    //       print('Координаты виджета с ключом ${element}: $widgetPosition');
+    //     }
+    //   });
+    // });
 
     groupIDSeek = GetIt.I.get<Data>().seekGroup;
     currentWeek = ((NavigationDate.difference(septemberFirst).inDays +
@@ -59,6 +60,23 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     todayWeek = currentWeek;
     // Находим понедельник и воскресенье текущей недели
+    DateTime monday =
+        NavigationDate.subtract(Duration(days: NavigationDate.weekday - 1));
+    DateTime sunday = monday.add(const Duration(days: 6));
+
+    // Устанавливаем время для понедельника и воскресенья
+    DateTime startOfWeek = DateTime(monday.year, monday.month, monday.day);
+    DateTime endOfWeek =
+        DateTime(sunday.year, sunday.month, sunday.day, 23, 59, 59);
+
+    bloc.add(FetchData(
+      groupID: groupIDSeek,
+      dateStart: startOfWeek,
+      dateEnd: endOfWeek,
+    ));
+  }
+
+  _loadPage() {
     DateTime monday =
         NavigationDate.subtract(Duration(days: NavigationDate.weekday - 1));
     DateTime sunday = monday.add(const Duration(days: 6));
@@ -162,12 +180,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     ),
                   ),
                 ),
-                SliverPersistentHeader(
-                    pinned: true,
-                    delegate: CustomSliverPersistentHeader(
-                      minHeight: 50,
-                      maxHeight: 80,
-                    )),
+                // SliverPersistentHeader(
+                //     pinned: true,
+                //     delegate: CustomSliverPersistentHeader(
+                //       minHeight: 50,
+                //       maxHeight: 80,
+                //     )),
                 SliverPadding(
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverToBoxAdapter(
@@ -182,9 +200,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                             currentWeek: currentWeek,
                           );
                         } else if (state is ScheduleFailedLoading) {
-                          return const FailedLoadWidget();
+                          return FailedLoadWidget(
+                            funcReload: _loadWeekSchedule,
+                          );
                         } else if (state is ScheduleLoading) {
-                          return const Text("Loading");
+                          return Container(
+                            height: 550,
+                            child: Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Loading...",
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontFamily: 'Ubuntu',
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 26),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
                         } else if (state is ScheduleInitial) {
                           return const Text("Starting");
                         } else {
@@ -336,32 +374,51 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 }
 
 class FailedLoadWidget extends StatelessWidget {
-  const FailedLoadWidget({
-    super.key,
-  });
+  final Function funcReload;
+  const FailedLoadWidget({super.key, required this.funcReload});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 120,
           ),
-          Icon(
+          const Icon(
             Icons.warning_amber,
             color: Colors.red,
             size: 100,
             shadows: [Shadow(color: Colors.red, blurRadius: 12)],
           ),
-          Text(
+          const Text(
             "Failed to load",
             style: TextStyle(
                 color: Colors.red,
                 fontFamily: 'Ubuntu',
                 fontWeight: FontWeight.bold,
                 fontSize: 26),
-          )
+          ),
+          GestureDetector(
+            onTap: () {
+              funcReload.call();
+            },
+            child: Container(
+              width: 150,
+              height: 40,
+              child: Center(
+                child: Text(
+                  "Reload",
+                  style: TextStyle(
+                      color: Colors.white, fontFamily: 'Ubuntu', fontSize: 18),
+                ),
+              ),
+              decoration: BoxDecoration(
+                  boxShadow: [BoxShadow(color: Colors.red, blurRadius: 6)],
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+            ),
+          ),
         ],
       ),
     );

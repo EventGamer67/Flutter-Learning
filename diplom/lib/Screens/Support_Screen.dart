@@ -55,7 +55,7 @@ class _SupportSreenState extends State<SupportSreen> {
         'takerID': '${-1}',
         'created_at': '${DateTime.now()}'
       });
-      GetIt.I.get<Talker>().good('send ${result}');
+      GetIt.I.get<Talker>().good('send $result');
     } catch (err) {
       GetIt.I.get<Talker>().critical('Failed send $err');
       return;

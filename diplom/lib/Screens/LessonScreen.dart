@@ -95,10 +95,10 @@ class _LessonScreenState extends State<LessonScreen> {
                 child: Column(
                   children: [
                     Image.network(
-                      this.widget.lesson.media,
+                      widget.lesson.media,
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
-                        return SizedBox(
+                        return const SizedBox(
                           height: 30,
                           child: Center(
                             child: Text("Изображение загружается"),
@@ -106,7 +106,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         );
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        return SizedBox(
+                        return const SizedBox(
                           height: 30,
                           child: Center(
                             child: Text("Ошибка загрузки изображения"),
@@ -117,8 +117,8 @@ class _LessonScreenState extends State<LessonScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        this.widget.lesson.text,
-                        style: TextStyle(fontSize: 18),
+                        widget.lesson.text,
+                        style: const TextStyle(fontSize: 18),
                       ),
                     )
                   ],
@@ -213,18 +213,18 @@ class _ParsedLessonState extends State<ParsedLesson> {
             decoration: element['decorated'] != null
                 ? BoxDecoration(
                     color: Colors.purple.withOpacity(0.3),
-                    borderRadius: BorderRadius.all(Radius.circular(20)))
+                    borderRadius: const BorderRadius.all(Radius.circular(20)))
                 : null,
             alignment: Alignment.topLeft,
             child: Padding(
               padding: element['decorated'] != null
-                  ? EdgeInsets.all(8)
-                  : EdgeInsets.all(0),
+                  ? const EdgeInsets.all(8)
+                  : const EdgeInsets.all(0),
               child: Row(
                 children: [
                   element['pointed'] != null
                       ? Container(
-                          margin: EdgeInsets.all(5),
+                          margin: const EdgeInsets.all(5),
                           width: 10,
                           height: 10,
                           decoration: const BoxDecoration(
@@ -253,13 +253,13 @@ class _ParsedLessonState extends State<ParsedLesson> {
             decoration: element['decorated'] != null
                 ? BoxDecoration(
                     color: Colors.purple.withOpacity(0.3),
-                    borderRadius: BorderRadius.all(Radius.circular(20)))
+                    borderRadius: const BorderRadius.all(Radius.circular(20)))
                 : null,
             alignment: Alignment.topLeft,
             child: Padding(
               padding: element['decorated'] != null
-                  ? EdgeInsets.all(8)
-                  : EdgeInsets.all(0),
+                  ? const EdgeInsets.all(8)
+                  : const EdgeInsets.all(0),
               child: Text(
                 element['data'],
                 overflow: TextOverflow.fade,
@@ -364,7 +364,7 @@ class QuestionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(20)),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
           border: Border.all(color: Colors.blue, width: 2)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -380,7 +380,7 @@ class QuestionWidget extends StatelessWidget {
                   margin: const EdgeInsets.symmetric(vertical: 5),
                   width: double.infinity,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
                       border: Border.all(
                           color: Colors.black.withAlpha(120), width: 2)),
                   child: Padding(

@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 import 'package:zameny_flutter/Services/Data.dart';
 import 'package:zameny_flutter/Sreens/Schedule_Screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,6 +23,9 @@ Future<void> main() async {
 
   Data data = Data();
   GetIt.I.registerSingleton<Data>(data);
+
+  Talker talker = Talker();
+  GetIt.I.registerSingleton<Talker>(talker);
 
   runApp(MyApp());
 }
@@ -47,7 +51,6 @@ class MainScreen extends StatefulWidget {
   MainScreen({super.key, required this.title});
 
   final String title;
-  final List<Widget> pages = [ScheduleScreen(), Placeholder(), Placeholder()];
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -55,12 +58,29 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int selectedPageIndex = 0;
+  late final PageController pageController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    pageController = PageController(initialPage: 0);
+
+    super.initState();
+  }
+
+  _setPage(int index) {
+    pageController.animateToPage(index,
+        duration: Duration(milliseconds: 200), curve: Curves.easeOutQuint);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(children: [
-        widget.pages[selectedPageIndex],
+        PageView(
+          controller: pageController,
+          children: const [ScheduleScreen(), Placeholder(), Placeholder()],
+        ),
         Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -77,14 +97,20 @@ class _MainScreenState extends State<MainScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       bottomNavigationItem(
+                          index: 0,
+                          onTap: _setPage,
                           icon: Icons.school_rounded,
                           text: "Schedule",
                           selected: false),
                       bottomNavigationItem(
+                          index: 1,
+                          onTap: _setPage,
                           icon: Icons.code_rounded,
                           text: "Exams",
                           selected: false),
                       bottomNavigationItem(
+                          index: 2,
+                          onTap: _setPage,
                           icon: Icons.settings,
                           text: "Settings",
                           selected: false),
@@ -96,39 +122,56 @@ class _MainScreenState extends State<MainScreen> {
       ]),
     );
   }
+}
 
-  Padding bottomNavigationItem(
-      {required IconData icon, required String text, required bool selected}) {
+class bottomNavigationItem extends StatelessWidget {
+  final int index;
+  final Function onTap;
+  final IconData icon;
+  final String text;
+  const bottomNavigationItem(
+      {super.key,
+      required this.index,
+      required this.onTap,
+      required IconData this.icon,
+      required String this.text,
+      required bool selected});
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(10.0),
-      child: Container(
-          height: 50,
-          decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 30, 118, 233),
-              boxShadow: [
-                BoxShadow(
-                  color: Color.fromARGB(255, 28, 95, 182),
-                  blurStyle: BlurStyle.outer,
-                  blurRadius: 6,
+      child: GestureDetector(
+        onTap: () { onTap.call(index); },
+        child: Container(
+            height: 50,
+            decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 30, 118, 233),
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromARGB(255, 28, 95, 182),
+                    blurStyle: BlurStyle.outer,
+                    blurRadius: 6,
+                  )
+                ],
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.0),
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Icon(
+                  icon,
+                  color: Colors.white,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  text,
+                  style: TextStyle(color: Colors.white),
                 )
-              ],
-              borderRadius: BorderRadius.all(Radius.circular(20))),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Icon(
-                icon,
-                color: Colors.white,
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              Text(
-                text,
-                style: TextStyle(color: Colors.white),
-              )
-            ]),
-          )),
+              ]),
+            )),
+      ),
     );
   }
 }

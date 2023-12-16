@@ -14,6 +14,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
         appBar: AppBar(
           elevation: 60,
           backgroundColor: const Color.fromARGB(255, 52, 152, 219).withOpacity(0.6),
+          title: Text("Тест",style: TextStyle(fontFamily: 'Comic Sans', color: Colors.white), ),
         ),
         body: SafeArea(
           child: Stack(children: [
@@ -22,14 +23,14 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  "Функции органов                        ",
+                  "Тест 1.1",
                   style: TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
                 ),
                 Container(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     alignment: Alignment.center,
                     child: const Text(
-                      "Какая функция относится к работе почек?",
+                      "Что такое самообразование?",
                       textAlign: TextAlign.center,
                       style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
                     )),
@@ -50,7 +51,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                         child: ListTile(
                           onTap: () {},
                           title: const Text(
-                              "Продуцирование желчи",
+                              "Самообразование — это процесс приобретения знаний, навыков и компетенций без прямого участия учителя или формальной образовательной программы.",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
@@ -67,7 +68,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                         child: ListTile(
                           onTap: () {},
                           title: const Text(
-                              "Фильтрация крови",
+                              "Самообразование включает в себя активное поиск информации, изучение новых предметов и умение самостоятельно овладевать новыми знаниями.",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
@@ -84,7 +85,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                         child: ListTile(
                           onTap: () {},
                           title: const Text(
-                              "Управление температурой тела",
+                              "Самообразование представляет собой процесс развития личности через самостоятельное изучение интересующих тем и областей без посторонней направленности.",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),
@@ -101,7 +102,7 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                         child: ListTile(
                           onTap: () {},
                           title: const Text(
-                              "Синтез инсулина",
+                              "Самообразование — это способность человека к саморазвитию, поиску новой информации и собственному обучению, не зависящему от формальных учебных заведений.",
                               style: TextStyle(fontFamily: 'Comic Sans')),
                         ),
                       ),

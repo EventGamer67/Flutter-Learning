@@ -1,3 +1,4 @@
+import 'package:diplom/Screens/LessonTest_Screen.dart';
 import 'package:diplom/Screens/Main_Screen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -52,7 +53,8 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
     await Api().loadData();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => const Main_Screen()),
+      //MaterialPageRoute(builder: (BuildContext context) => const Main_Screen()),
+      MaterialPageRoute(builder: (BuildContext context) => const LessonTestScreen()),
     );
   }
 
