@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_application_testwebapioutput/api/requestModels/UserDto.dart';
-import 'package:flutter_application_testwebapioutput/main.dart';
 import 'package:flutter_application_testwebapioutput/repository/data.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Category.dart';
 import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
@@ -16,9 +15,15 @@ class Api {
       final userDto = UserDto(user_name: login, password: password);
       final response = await GetIt.I.get<Dio>().post('https://10.0.2.2:7080/login',data: userDto.toJson(),);
       if (response.statusCode == 200) { // Check for a successful response
-        final userData = response.data as Map<String, dynamic>; // Assuming data is already parsed
+        print(response.data["item2"]);
+        //final userData = response.data[0] as Map<String, dynamic>; // Assuming data is already parsed
+        final userData = response.data["item1"];
+        final token = response.data["item2"];
         final user = User.fromJson(userData);
-        GetIt.I.get<Data>().user = user;
+
+        final dataInstance = GetIt.I.get<Data>();
+        dataInstance.user = user;
+        dataInstance.token = token;
         return true;
       } 
       else 

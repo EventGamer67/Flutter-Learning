@@ -29,7 +29,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   //Instantiating the class with the Ip and the PortNumber
-  TcpSocketConnection socketConnection=TcpSocketConnection("172.17.131.24", 8888);
+  TcpSocketConnection socketConnection=TcpSocketConnection("127.0.0.1", 8888);
 
   String message="no recieve";
 
@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
     {   //check if it's possible to connect to the endpoint
       await socketConnection.connect(5000, messageReceived, attempts: 3);
     }
+    socketConnection.sendMessage("MessageIsReceived :D ");
   }
 
   @override

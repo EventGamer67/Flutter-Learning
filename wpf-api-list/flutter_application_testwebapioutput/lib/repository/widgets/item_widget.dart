@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_testwebapioutput/repository/models/Item.dart';
 
 class ItemsWidget extends StatelessWidget {
-  const ItemsWidget({super.key, required Item});
+  const ItemsWidget({super.key, required item});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +32,7 @@ class ItemsWidget extends StatelessWidget {
                   ),
                 ),
                 const Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: EdgeInsets.only(bottom: 8),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Column(

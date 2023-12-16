@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^2.0.7
   dio: ^5.3.3
+  get_it: ^7.6.4
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -48,6 +50,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/img/Icon.png"
+  adaptive_icon_foreground: "assets/img/Icon.png"
+  adaptive_icon_background: "assets/img/Icon.png"
+  android: "launcher_icon"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -67,6 +76,9 @@ flutter:
     - assets/img/Logo.png
     - assets/svg/background.svg
     - assets/svg/leafs.svg
+    - assets/svg/Home.svg
+    - assets/svg/Nav.svg
+    - assets/svg/Profile.svg
     - assets/fonts/AlegreyaSans-Medium.ttf
 
   fonts:

@@ -6,4 +6,5 @@ class Data {
   List<Item> itemList = [];
   List<Category> itemCategory = [];
   late User user;
+  late String token;
 }
