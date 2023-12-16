@@ -8,6 +8,8 @@ import 'package:talker_flutter/talker_flutter.dart';
 import 'package:zameny_flutter/Services/Data.dart';
 import 'package:zameny_flutter/Sreens/Schedule_Screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:zameny_flutter/Sreens/examsSreen.dart';
+import 'package:zameny_flutter/theme/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,12 +38,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: MyTheme().themeData,
       home: MainScreen(title: 'Flutter Demo Home Page'),
     );
   }
@@ -76,10 +74,11 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: MyTheme().backgroundColor,
       body: Stack(children: [
         PageView(
           controller: pageController,
-          children: const [ScheduleScreen(), Placeholder(), Placeholder()],
+          children: const [ScheduleScreen(), ExamsScreen(), Placeholder()],
         ),
         Align(
             alignment: Alignment.bottomCenter,

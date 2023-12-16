@@ -1,14 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 import 'package:zameny_flutter/Services/Data.dart';
 import 'package:zameny_flutter/Services/Tools.dart';
 import 'package:zameny_flutter/Widgets/CourseTile.dart';
 import 'package:zameny_flutter/Widgets/GroupTile.dart';
-import 'package:zameny_flutter/Widgets/Test.dart';
 import 'package:zameny_flutter/blocs/schedule_bloc.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -406,17 +403,17 @@ class FailedLoadWidget extends StatelessWidget {
             child: Container(
               width: 150,
               height: 40,
-              child: Center(
+              decoration: const BoxDecoration(
+                  boxShadow: [BoxShadow(color: Colors.red, blurRadius: 6)],
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              child: const Center(
                 child: Text(
                   "Reload",
                   style: TextStyle(
                       color: Colors.white, fontFamily: 'Ubuntu', fontSize: 18),
                 ),
               ),
-              decoration: BoxDecoration(
-                  boxShadow: [BoxShadow(color: Colors.red, blurRadius: 6)],
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
             ),
           ),
         ],
