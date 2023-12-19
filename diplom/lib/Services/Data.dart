@@ -8,7 +8,6 @@ import 'package:get_it/get_it.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 
 class Data {
   List<Course> Courses = [];

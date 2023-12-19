@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -10,6 +9,50 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
+
+Widget defineLessonPage(
+    {required Lesson lesson, required bool alreadyCompleted}) {
+  //lection
+  switch (lesson.type) {
+    //lection
+    case 1:
+      return LessonScreen(
+        lesson: lesson,
+        alreadyCompleted: alreadyCompleted,
+      );
+    //test
+    case 2:
+      return SizedBox();
+    //video
+    case 3:
+      return SizedBox();
+    //pract
+    case 4:
+      return SizedBox();
+  }
+  return SizedBox();
+}
+
+class DefineLessonScreen extends StatefulWidget {
+  final Lesson lesson;
+  final bool alreadyCompleted;
+  final LessonType lessonType;
+  const DefineLessonScreen(
+      {super.key,
+      required this.lesson,
+      required this.alreadyCompleted,
+      required this.lessonType});
+
+  @override
+  State<DefineLessonScreen> createState() => _DefineLessonScreenState();
+}
+
+class _DefineLessonScreenState extends State<DefineLessonScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
 
 class LessonScreen extends StatefulWidget {
   final Lesson lesson;

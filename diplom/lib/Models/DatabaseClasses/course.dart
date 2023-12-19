@@ -4,7 +4,6 @@ import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:get_it/get_it.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 
 class Course {
   int id;

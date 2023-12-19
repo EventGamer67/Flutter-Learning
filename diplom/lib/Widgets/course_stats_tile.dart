@@ -18,24 +18,27 @@ class CourseStateTile extends StatelessWidget {
     GetIt.I.get<Talker>().debug(dat.lessonTypes);
 
     return Container(
-      height: 132,
+      height: 148,
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: Row(
-              children: lessontypes
-                  .map((e) => StatTile(
-                        lessonType: e,
-                        count: lessons
-                            .where((element) => element.type == e.id)
-                            .length,
-                        completed: lessons
-                            .where((element) =>
-                                element.type == e.id &&
-                                dat.user.completedLessonsID
-                                    .contains(element.id))
-                            .length,
-                      ))
-                  .toList())),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+                children: lessontypes
+                    .map((e) => StatTile(
+                          lessonType: e,
+                          count: lessons
+                              .where((element) => element.type == e.id)
+                              .length,
+                          completed: lessons
+                              .where((element) =>
+                                  element.type == e.id &&
+                                  dat.user.completedLessonsID
+                                      .contains(element.id))
+                              .length,
+                        ))
+                    .toList()),
+          )),
     );
   }
 }
@@ -57,17 +60,19 @@ class StatTile extends StatelessWidget {
       aspectRatio: 1 / 1,
       child: Container(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Stack(children: [
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: Center(
-                  child: Icon(
-                    lessonType.getLessonTypeIcon(),
-                    size: 32,
-                    color: Color.fromARGB(255, 52, 152, 219),
+              FittedBox(
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Center(
+                    child: Icon(
+                      lessonType.getLessonTypeIcon(),
+                      size: 32,
+                      color: Color.fromARGB(255, 52, 152, 219),
+                    ),
                   ),
                 ),
               ),

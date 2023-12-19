@@ -104,7 +104,8 @@ class Api {
 
   Future<List<dynamic>> loadLessonTest(int id) async {
     final client = GetIt.I.get<Supabase>().client;
-    final result = await client.from('LessonTests').select('*');
+    final result = await client.from('LessonTests').select('*').eq('lesson', id);
+    GetIt.I<Talker>().debug(result);
     return result;
   }
 
