@@ -8,11 +8,13 @@ import 'package:get_it/get_it.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class Data {
   List<Course> Courses = [];
   List<DifficultTypes> difficults = [];
   List<LessonType> lessonTypes = [];
+  List<int> ClosedCourses = [];
   MyUser user = MyUser(
       id: 1,
       RoleID: 1,
@@ -57,6 +59,20 @@ class LessonType {
 
   factory LessonType.fromJson(String source) =>
       LessonType.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  IconData getLessonTypeIcon() {
+    switch (id) {
+      case 1:
+        return Icons.school_outlined;
+      case 2:
+        return Icons.mode_edit_outline;
+      case 3:
+        return Icons.slideshow_outlined;
+      case 4:
+        return Icons.add_a_photo_outlined;
+    }
+    return Icons.abc;
+  }
 }
 
 enum LessonStateTypes {
@@ -74,21 +90,25 @@ class Lesson {
   String media = "";
   String text = "";
 
-  Lesson({
-    required this.id,
-    required this.moduleID,
-    required this.name,
-    required this.type,
-    required this.media,
-    required this.text
-  });
+  Lesson(
+      {required this.id,
+      required this.moduleID,
+      required this.name,
+      required this.type,
+      required this.media,
+      required this.text});
 
   LessonStateTypes getLessonState(List<Lesson> courseLessons) {
     final Data data = GetIt.I.get<Data>();
     if (data.user.completedLessonsID.contains(id)) {
       return LessonStateTypes.Completed;
-    } else if ((id == courseLessons.first.id) || (data.user.completedLessonsID.contains(courseLessons.where((element) => element.id == id - 1).first.id))) {
+    } else if (id == courseLessons.first.id) {
       return LessonStateTypes.Current;
+    } else if (courseLessons.where((element) => element.id == id - 1).isNotEmpty) {
+      if (data.user.completedLessonsID.contains(
+          courseLessons.where((element) => element.id == id - 1).first.id)) {
+        return LessonStateTypes.Current;
+      }
     }
     return LessonStateTypes.Blocked;
   }
@@ -102,21 +122,18 @@ class Lesson {
         .name;
   }
 
-  Icon getLessonTypeIcon() {
+  IconData getLessonTypeIcon() {
     switch (type) {
-      case (1):
-        return const Icon(
-          Icons.school_outlined,
-          color: Color.fromARGB(255, 52, 152, 219),
-        );
-      case (2):
-        return const Icon(Icons.mode_edit,
-            color: Color.fromARGB(255, 52, 152, 219));
-      case (3):
-        return const Icon(Icons.slideshow,
-            color: Color.fromARGB(255, 52, 152, 219));
+      case 1:
+        return Icons.school_outlined;
+      case 2:
+        return Icons.mode_edit_outline;
+      case 3:
+        return Icons.slideshow_outlined;
+      case 4:
+        return Icons.add_a_photo_outlined;
     }
-    return const Icon(Icons.abc);
+    return Icons.abc;
   }
 
   Map<String, dynamic> toMap() {
@@ -132,13 +149,12 @@ class Lesson {
 
   factory Lesson.fromMap(Map<String, dynamic> map) {
     return Lesson(
-      id: map['id'] as int,
-      moduleID: map['moduleID'] as int,
-      name: map['name'] as String,
-      type: map['type'] as int,
-      media: map['media'] as String,
-      text: map['text'] as String
-    );
+        id: map['id'] as int,
+        moduleID: map['moduleID'] as int,
+        name: map['name'] as String,
+        type: map['type'] as int,
+        media: map['media'] as String,
+        text: map['text'] as String);
   }
 
   String toJson() => json.encode(toMap());

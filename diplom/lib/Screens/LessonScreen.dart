@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/course_testBlock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -22,6 +24,8 @@ class LessonScreen extends StatefulWidget {
 class _LessonScreenState extends State<LessonScreen> {
   late final Timer timer;
   double progressBarValue = 1.0;
+  late final loadBloc loadbloc;
+  List<dynamic> tests = [];
 
   @override
   void dispose() {
@@ -60,12 +64,21 @@ class _LessonScreenState extends State<LessonScreen> {
   }
 
   _loadlesson() async {
+    loadbloc = loadBloc();
+
+    final response = await Api().loadLessonTest(this.widget.lesson.id);
+
+    for (var el in response) {
+      tests.add(el['data']);
+    }
+
     if (!widget.alreadyCompleted) {
       progressBarValue = 0;
       timer = Timer.periodic(const Duration(seconds: 1), _updateProgress);
     } else {
       timer = Timer(const Duration(seconds: 0), () => null);
     }
+    loadbloc.add(LoadLoaded());
   }
 
   @override
@@ -120,7 +133,19 @@ class _LessonScreenState extends State<LessonScreen> {
                         widget.lesson.text,
                         style: const TextStyle(fontSize: 18),
                       ),
-                    )
+                    ),
+                    BlocBuilder(
+                        bloc: loadbloc,
+                        builder: (context, state) {
+                          if (state is Loaded) {
+                            return CourseTestBlock(tests: tests);
+                          } else if (state is Loading) {
+                            return Text("Loading");
+                          } else if (state is FailedLoading) {
+                            return Text("failed load");
+                          }
+                          return Text("Exception");
+                        }),
                   ],
                 ),
               ),

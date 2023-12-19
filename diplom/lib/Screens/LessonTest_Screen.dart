@@ -13,8 +13,12 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
     return Scaffold(
         appBar: AppBar(
           elevation: 60,
-          backgroundColor: const Color.fromARGB(255, 52, 152, 219).withOpacity(0.6),
-          title: Text("Тест",style: TextStyle(fontFamily: 'Comic Sans', color: Colors.white), ),
+          backgroundColor:
+              const Color.fromARGB(255, 52, 152, 219).withOpacity(0.6),
+          title: const Text(
+            "Тест",
+            style: TextStyle(fontFamily: 'Comic Sans', color: Colors.white),
+          ),
         ),
         body: SafeArea(
           child: Stack(children: [
@@ -43,7 +47,8 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                     children: [
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
                               color: const Color.fromARGB(255, 52, 152, 219),
@@ -60,7 +65,8 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
                               color: const Color.fromARGB(255, 52, 152, 219),
@@ -77,7 +83,8 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
                               color: const Color.fromARGB(255, 52, 152, 219),
@@ -94,7 +101,8 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                       ),
                       Container(
                         decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.all(Radius.circular(20)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
                             border: Border.all(
                               width: 2,
                               color: const Color.fromARGB(255, 52, 152, 219),
@@ -119,7 +127,8 @@ class _LessonTestScreenState extends State<LessonTestScreen> {
                           child: Text("Далее",
                               style: TextStyle(
                                   fontFamily: 'Comic Sans',
-                                  color: Colors.white, fontSize: 24)),
+                                  color: Colors.white,
+                                  fontSize: 24)),
                         ),
                       )
                     ],

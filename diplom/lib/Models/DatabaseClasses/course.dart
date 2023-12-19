@@ -14,6 +14,7 @@ class Course {
   int difficultID;
   double progress = 0;
   List<Module> modules = [];
+  int author;
 
   int getLessonCount() {
     int sum = 0;
@@ -25,14 +26,12 @@ class Course {
 
   int getLessonCompleteCount(){
     final MyUser user = GetIt.I.get<Data>().user;
-    GetIt.I.get<Talker>().debug("completed count ${user.completedLessonsID.length}");
     List<Lesson> lessons = [];
     for(Module module in modules){
       for(Lesson lesson in module.lessons){
         lessons.add(lesson);
       }
     }
-    GetIt.I.get<Talker>().debug(lessons.where( (element) => user.completedLessonsID.contains(element.id)).length);
     return lessons.where( (element) => user.completedLessonsID.contains(element.id)).length;
   }
 
@@ -42,6 +41,7 @@ class Course {
     required this.description,
     required this.photo,
     required this.difficultID,
+    required this.author
   });
 
   Map<String, dynamic> toMap() {
@@ -61,6 +61,7 @@ class Course {
       description: map['description'] as String,
       photo: map['photo'] as String,
       difficultID: map['difficultID'] as int,
+      author: map['author'] as int
     );
   }
 

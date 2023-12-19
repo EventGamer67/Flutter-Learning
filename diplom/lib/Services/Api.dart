@@ -1,3 +1,4 @@
+import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
@@ -27,7 +28,14 @@ class Api {
     }
   }
 
-  Future<List<Map<String,dynamic>>> getJsonPage(int lessonID) async {
+  Future<OtherUser?> getUser(int id) async {
+    final sup = GetIt.I.get<Supabase>();
+    final List<dynamic> user = await sup.client.from('Users').select('id,avatarURL,registerDate,RoleID,name').eq('id', id);
+    GetIt.I.get<Talker>().debug(user);
+    return OtherUser.fromMap(user[0]);
+  }
+
+  Future<List<Map<String, dynamic>>> getJsonPage(int lessonID) async {
     final client = GetIt.I.get<Supabase>().client;
     try {
       final result = await client
@@ -37,7 +45,7 @@ class Api {
           .single(); // Assuming you're expecting a single result
 
       if (result != null) {
-        return List<Map<String,dynamic>>.from(result['data']);
+        return List<Map<String, dynamic>>.from(result['data']);
       } else {
         GetIt.I
             .get<Talker>()
@@ -71,7 +79,7 @@ class Api {
       final result = await client
           .from('UserCourses')
           .insert({'UserID': '${data.user.id}', 'CourseID': '$courseID'});
-      GetIt.I.get<Talker>().good("Registered to course");
+      GetIt.I.get<Talker>().good("Registered to course $result");
       return true;
     } catch (err) {
       GetIt.I.get<Talker>().critical("Register to course failed $err");
@@ -92,6 +100,12 @@ class Api {
       GetIt.I.get<Talker>().critical("Failed to check $err");
       return false;
     }
+  }
+
+  Future<List<dynamic>> loadLessonTest(int id) async {
+    final client = GetIt.I.get<Supabase>().client;
+    final result = await client.from('LessonTests').select('*');
+    return result;
   }
 
   Future<List<Course>> getUserCourses(int userID) async {
@@ -145,15 +159,28 @@ class Api {
     return res;
   }
 
+
   Future<bool?> loadData() async {
     final data = GetIt.I.get<Data>();
     final client = GetIt.I.get<Supabase>().client;
     data.Courses = await _loadCourses(client);
+    data.ClosedCourses = await _loadClosedCourses();
     data.difficults = await _loadDifficults(client);
     data.lessonTypes = await _loadLessonTypes(client);
     data.user.completedLessonsID =
         await Api().loadCompletedUserCourses(data.user.id);
     return true;
+  }
+
+  Future<List<int>> _loadClosedCourses() async {
+    final client = GetIt.I.get<Supabase>().client;
+    final res = await client.from('ClosedCourses').select('*');
+    GetIt.I.get<Talker>().debug(res);
+    try{
+      return List<int>.from((res as List<dynamic>).map((e) => e['id'] as int));
+    }catch(err){
+      return [];
+    }
   }
 
   Future<List<int>> loadCompletedUserCourses(int userID) async {

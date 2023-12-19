@@ -2,9 +2,11 @@
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
+import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/authorCourseTile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,27 +26,27 @@ class _CourseScreenState extends State<CourseScreen> {
   List<Lesson> lessons = [];
   bool alreadyRegistered = false;
   loadBloc loadbloc = loadBloc();
+  OtherUser? author = null;
 
   _loadModules() async {
     try {
       alreadyRegistered = await Api().userRegisteredToCourse(
           widget.course.id, GetIt.I.get<Data>().user.id);
 
-      modules = await Api()
-          .loadModules(this.widget.course.id);
+      modules = await Api().loadModules(this.widget.course.id);
+      author = await Api().getUser(this.widget.course.author);
 
       modules.sort(((a, b) {
         return a.name.compareTo(b.name);
       }));
       for (var module in modules) {
-        lessons.addAll(await Api().loadLessons(module.id)..sort(((a, b) {
-          return a.name.compareTo(b.name);
-        })));
+        lessons.addAll(await Api().loadLessons(module.id)
+          ..sort(((a, b) {
+            return a.name.compareTo(b.name);
+          })));
       }
       loadbloc.add(LoadLoaded());
-      setState(() {
-        
-      });
+      setState(() {});
     } catch (err) {
       GetIt.I.get<Talker>().critical('Failed to load modules ${err}');
       loadbloc.add(LoadFailedLoading());
@@ -82,14 +84,17 @@ class _CourseScreenState extends State<CourseScreen> {
                 flexibleSpace: FlexibleSpaceBar(
                   title: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        widget.course.name,
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontFamily: 'Comic Sans',
-                          shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 40)
-                          ],
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          widget.course.name,
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontFamily: 'Comic Sans',
+                            shadows: const [
+                              Shadow(color: Colors.black, blurRadius: 40)
+                            ],
+                          ),
                         ),
                       )),
                   background: Image.network(
@@ -103,10 +108,13 @@ class _CourseScreenState extends State<CourseScreen> {
                   padding: EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Text(
-                        'Описание курса: \n${widget.course.description}',
-                        style:
-                            TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans'),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Описание курса: \n${widget.course.description}',
+                          style: TextStyle(
+                              fontSize: 18.0, fontFamily: 'Comic Sans'),
+                        ),
                       ),
                       Divider(),
                       Container(
@@ -114,8 +122,10 @@ class _CourseScreenState extends State<CourseScreen> {
                         child: Text(
                           'Модули:',
                           textAlign: TextAlign.start,
-                          style:
-                              TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans', ),
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontFamily: 'Comic Sans',
+                          ),
                         ),
                       ),
                     ],
@@ -128,35 +138,41 @@ class _CourseScreenState extends State<CourseScreen> {
                   builder: (context, state) {
                     if (state is Loaded) {
                       return Column(
-                          children: modules.map((e) {
-                        final moduleLessons = lessons
-                            .where((element) => element.moduleID == e.id);
-                        return ExpansionTile(
-                          title: Text(
-                            e.name,
-                            style: TextStyle(
-                                fontFamily: 'Comic Sans', fontSize: 20),
-                          ),
-                          children: moduleLessons
-                              .map((e) => ListTile(
-                                    subtitle: Text(
-                                      e.getLessonTypeName(),
-                                      style: TextStyle(
-                                          color: Colors.black.withOpacity(0.5),
-                                          fontFamily: 'Comic Sans'),
-                                    ),
-                                    title: Text(
-                                      e.name,
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontFamily: 'Comic Sans'),
-                                    ),
-                                    leading: Icon(Icons.school_outlined,
-                                        color: Colors.blue),
-                                  ))
-                              .toList(),
-                        );
-                      }).toList());
+                        children: [
+                          Column(
+                              children: modules.map((e) {
+                            final moduleLessons = lessons
+                                .where((element) => element.moduleID == e.id);
+                            return ExpansionTile(
+                              title: Text(
+                                e.name,
+                                style: TextStyle(
+                                    fontFamily: 'Comic Sans', fontSize: 20),
+                              ),
+                              children: moduleLessons
+                                  .map((e) => ListTile(
+                                        subtitle: Text(
+                                          e.getLessonTypeName(),
+                                          style: TextStyle(
+                                              color: Colors.black.withOpacity(0.5),
+                                              fontFamily: 'Comic Sans'),
+                                        ),
+                                        title: Text(
+                                          e.name,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontFamily: 'Comic Sans'),
+                                        ),
+                                        leading: Icon(Icons.school_outlined,
+                                            color: Colors.blue),
+                                      ))
+                                  .toList(),
+                            );
+                          }).toList()),
+                          Divider(),
+                          AuthorCourseTile(author: author!)
+                        ],
+                      );
                     } else if (state is Loading) {
                       return SizedBox(
                           width: double.infinity,
@@ -193,38 +209,42 @@ class _CourseScreenState extends State<CourseScreen> {
             child: Container(
               padding: EdgeInsets.all(30),
               child: GestureDetector(
-                onTap: () { alreadyRegistered ? null :
-                  showCupertinoDialog(
-                    context: context,
-                    builder: (context) {
-                      return CupertinoAlertDialog(
-                        title: Text(
-                          "Хотите записаться на курс?",
-                          style: TextStyle(fontFamily: 'Comic Sans'),
-                        ),
-                        actions: [
-                          CupertinoDialogAction(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Text("Нет",
-                                style: TextStyle(fontFamily: 'Comic Sans')),
-                          ),
-                          CupertinoDialogAction(
-                            onPressed: () async {
-                              await Api().registerUserToCourse(widget.course.id);
-                              alreadyRegistered = true;
-                              Navigator.of(context).pop();
-                              setState(() {
-                              });
-                            },
-                            child: Text("Да",
-                                style: TextStyle(fontFamily: 'Comic Sans')),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                onTap: () {
+                  alreadyRegistered
+                      ? null
+                      : showCupertinoDialog(
+                          context: context,
+                          builder: (context) {
+                            return CupertinoAlertDialog(
+                              title: Text(
+                                "Хотите записаться на курс?",
+                                style: TextStyle(fontFamily: 'Comic Sans'),
+                              ),
+                              actions: [
+                                CupertinoDialogAction(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Нет",
+                                      style:
+                                          TextStyle(fontFamily: 'Comic Sans')),
+                                ),
+                                CupertinoDialogAction(
+                                  onPressed: () async {
+                                    await Api()
+                                        .registerUserToCourse(widget.course.id);
+                                    alreadyRegistered = true;
+                                    Navigator.of(context).pop();
+                                    setState(() {});
+                                  },
+                                  child: Text("Да",
+                                      style:
+                                          TextStyle(fontFamily: 'Comic Sans')),
+                                ),
+                              ],
+                            );
+                          },
+                        );
                 },
                 child: Container(
                   height: 50,

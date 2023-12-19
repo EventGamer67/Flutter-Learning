@@ -1,4 +1,3 @@
-import 'package:diplom/Screens/LessonTest_Screen.dart';
 import 'package:diplom/Screens/Main_Screen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -48,13 +47,14 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
           });
       return;
     }
+
     final Data data = GetIt.I.get<Data>();
     data.user = result;
     await Api().loadData();
     Navigator.pushReplacement(
       context,
-      //MaterialPageRoute(builder: (BuildContext context) => const Main_Screen()),
-      MaterialPageRoute(builder: (BuildContext context) => const LessonTestScreen()),
+      MaterialPageRoute(builder: (BuildContext context) => const Main_Screen()),
+      //MaterialPageRoute(builder: (BuildContext context) => const PDFCourseScreen()),
     );
   }
 
@@ -129,33 +129,33 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Забыли пароль?",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 52, 152, 219),
-                            fontFamily: 'Comic Sans'),
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                        "Восставновить",
-                        style: TextStyle(
-                            color: Color.fromARGB(255, 52, 152, 219),
-                            fontFamily: 'Comic Sans',
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  )
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // const Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     Text(
+                  //       "Забыли пароль?",
+                  //       style: TextStyle(
+                  //           color: Color.fromARGB(255, 52, 152, 219),
+                  //           fontFamily: 'Comic Sans'),
+                  //     ),
+                  //     SizedBox(
+                  //       width: 5,
+                  //     ),
+                  //     Text(
+                  //       "Восставновить",
+                  //       style: TextStyle(
+                  //           color: Color.fromARGB(255, 52, 152, 219),
+                  //           fontFamily: 'Comic Sans',
+                  //           fontWeight: FontWeight.bold),
+                  //     ),
+                  //   ],
+                  // )
                 ],
               ),
             ),

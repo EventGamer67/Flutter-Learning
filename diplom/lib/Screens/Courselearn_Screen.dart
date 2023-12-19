@@ -8,6 +8,7 @@ import 'package:diplom/Screens/LessonScreen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/course_stats_tile.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -78,14 +79,17 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                 flexibleSpace: FlexibleSpaceBar(
                   title: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        widget.course.name,
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                          fontFamily: 'Comic Sans',
-                          shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 40)
-                          ],
+                      child: Container(
+                        alignment: Alignment.bottomRight,
+                        child: Text(
+                          widget.course.name,
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontFamily: 'Comic Sans',
+                            shadows: const [
+                              Shadow(color: Colors.black, blurRadius: 40)
+                            ],
+                          ),
                         ),
                       )),
                   background: Image.network(
@@ -121,7 +125,9 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                               style: TextStyle(
                                   fontSize: 24.0,
                                   fontFamily: 'Comic Sans',
-                                  shadows: [Shadow(color: Colors.black, blurRadius: 6)],
+                                  shadows: const [
+                                    Shadow(color: Colors.black, blurRadius: 6)
+                                  ],
                                   color: Colors.white),
                             ),
                           ),
@@ -133,8 +139,10 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                         child: Text(
                           'Модули:',
                           textAlign: TextAlign.start,
-                          style:
-                              TextStyle(fontSize: 18.0, fontFamily: 'Comic Sans', ),
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontFamily: 'Comic Sans',
+                          ),
                         ),
                       ),
                     ],
@@ -147,85 +155,101 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                   builder: (context, state) {
                     if (state is Loaded) {
                       return Column(
-                          children: modules.map((e) {
-                        final moduleLessons = lessons
-                            .where((element) => element.moduleID == e.id);
-                        return ExpansionTile(
-                          title: Text(
-                            e.name,
-                            style: TextStyle(
-                                fontFamily: 'Comic Sans', fontSize: 20),
+                        children: [
+                          CourseStateTile(
+                            course: this.widget.course,
+                            lessons: lessons,
                           ),
-                          children: moduleLessons
-                              .map((e) => ListTile(
-                                  onTap: () async {
-                                    final lessonStateTypes =
-                                        e.getLessonState(lessons);
-                                    switch (lessonStateTypes) {
-                                      case (LessonStateTypes.Current):
-                                        // await Navigator.push(context,
-                                        //     MaterialPageRoute(
-                                        //         builder: (context) {
-                                        //   return ParsedLesson(
-                                        //       lesson: e,
-                                        //       alreadyCompleted: false);
-                                        // }));
-                                        // setState(() {});
-                                        await Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return LessonScreen(
-                                              lesson: e,
-                                              alreadyCompleted: false);
-                                        }));
-                                        double completedPercents = this
-                                                .widget
-                                                .course
-                                                .getLessonCompleteCount() /
-                                            this.widget.course.getLessonCount();
-                                        this.widget.course.progress =
-                                            completedPercents;
-                                        setState(() {});
-                                      case (LessonStateTypes.Blocked):
-                                        () {};
-                                      case (LessonStateTypes.Completed):
-                                        // await Navigator.push(context,
-                                        //     MaterialPageRoute(
-                                        //         builder: (context) {
-                                        //   return ParsedLesson(
-                                        //       lesson: e,
-                                        //       alreadyCompleted: true);
-                                        // }));
-                                        await Navigator.push(context,
-                                            MaterialPageRoute(
-                                                builder: (context) {
-                                          return LessonScreen(
-                                              lesson: e,
-                                              alreadyCompleted: true);
-                                        }));
-                                        setState(() {});
-                                    }
-                                    return;
-                                  },
-                                  subtitle: Text(
-                                    e.getLessonTypeName(),
-                                    style: TextStyle(
-                                        color: Colors.black.withOpacity(0.5),
-                                        fontFamily: 'Comic Sans'),
-                                  ),
-                                  title: Text(
-                                    e.name,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontFamily: 'Comic Sans'),
-                                  ),
-                                  trailing: LessonCompleteTypeWidget(
-                                    LessonTypes: e.getLessonState(lessons),
-                                  ),
-                                  leading: e.getLessonTypeIcon()))
-                              .toList(),
-                        );
-                      }).toList());
+                          Column(
+                              children: modules.map((e) {
+                            final moduleLessons = lessons
+                                .where((element) => element.moduleID == e.id);
+                            return ExpansionTile(
+                              title: Text(
+                                e.name,
+                                style: TextStyle(
+                                    fontFamily: 'Comic Sans', fontSize: 20),
+                              ),
+                              children: moduleLessons
+                                  .map((e) => ListTile(
+                                      onTap: () async {
+                                        final lessonStateTypes =
+                                            e.getLessonState(lessons);
+                                        switch (lessonStateTypes) {
+                                          case (LessonStateTypes.Current):
+                                            // await Navigator.push(context,
+                                            //     MaterialPageRoute(
+                                            //         builder: (context) {
+                                            //   return ParsedLesson(
+                                            //       lesson: e,
+                                            //       alreadyCompleted: false);
+                                            // }));
+                                            // setState(() {});
+                                            await Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return LessonScreen(
+                                                  lesson: e,
+                                                  alreadyCompleted: false);
+                                            }));
+                                            double completedPercents = this
+                                                    .widget
+                                                    .course
+                                                    .getLessonCompleteCount() /
+                                                this
+                                                    .widget
+                                                    .course
+                                                    .getLessonCount();
+                                            this.widget.course.progress =
+                                                completedPercents;
+                                            setState(() {});
+                                          case (LessonStateTypes.Blocked):
+                                            () {};
+                                          case (LessonStateTypes.Completed):
+                                            // await Navigator.push(context,
+                                            //     MaterialPageRoute(
+                                            //         builder: (context) {
+                                            //   return ParsedLesson(
+                                            //       lesson: e,
+                                            //       alreadyCompleted: true);
+                                            // }));
+                                            await Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return LessonScreen(
+                                                  lesson: e,
+                                                  alreadyCompleted: true);
+                                            }));
+                                            setState(() {});
+                                        }
+                                        return;
+                                      },
+                                      subtitle: Text(
+                                        e.getLessonTypeName(),
+                                        style: TextStyle(
+                                            color:
+                                                Colors.black.withOpacity(0.5),
+                                            fontFamily: 'Comic Sans'),
+                                      ),
+                                      title: Text(
+                                        e.name,
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontFamily: 'Comic Sans'),
+                                      ),
+                                      trailing: LessonCompleteTypeWidget(
+                                        LessonTypes: e.getLessonState(lessons),
+                                      ),
+                                      leading: Icon(
+                                        e.getLessonTypeIcon(),
+                                        color:
+                                            Color.fromARGB(255, 52, 152, 219),
+                                      )))
+                                  .toList(),
+                            );
+                          }).toList()),
+                        ],
+                      );
                     } else if (state is Loading) {
                       return SizedBox(
                           width: double.infinity,
@@ -395,7 +419,7 @@ class OpenedCertificate extends StatelessWidget {
                                     width: 500,
                                     height: 200,
                                     child: pw.FittedBox(
-                                      fit: pw.BoxFit.scaleDown,
+                                        fit: pw.BoxFit.scaleDown,
                                         child: pw.Text(courseName,
                                             textAlign: pw.TextAlign.left,
                                             style: pw.TextStyle(

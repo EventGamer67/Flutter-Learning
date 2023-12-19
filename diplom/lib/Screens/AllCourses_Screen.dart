@@ -14,13 +14,13 @@ class CoursesGallery_Screen extends StatefulWidget {
 }
 
 class _CoursesGallery_ScreenState extends State<CoursesGallery_Screen> {
-  late final List<Course> coursesList;
+  late List<Course> coursesList;
 
   @override
   void initState() {
     super.initState();
-    coursesList = GetIt.I.get<Data>().Courses;
-    coursesList.sort((a, b) {
+    final Data dat = GetIt.I.get<Data>();
+    coursesList = dat.Courses.toList().where((e) => !dat.ClosedCourses.contains(e.id)).toList()..sort((a, b) {
       return a.name.compareTo(b.name);
     });
   }
