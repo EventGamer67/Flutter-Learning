@@ -17,7 +17,7 @@ Future<void> main() async {
   final dat = Data();
   GetIt.I.registerSingleton<Data>(dat);
 
-  final talker = Talker();
+  final talker = TalkerFlutter.init();
   GetIt.I.registerSingleton<Talker>(talker);
 
   runApp(const MyApp());

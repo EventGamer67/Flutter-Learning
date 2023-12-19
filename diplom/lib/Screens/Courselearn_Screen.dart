@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Screens/LessonScreen.dart';
+import 'package:diplom/Screens/LessonScreens/LectureScreen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
@@ -216,7 +217,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                             await Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return LessonScreen(
+                                              return defineLessonPage(
                                                   lesson: e,
                                                   alreadyCompleted: true);
                                             }));

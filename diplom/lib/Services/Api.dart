@@ -1,9 +1,13 @@
 import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
+import 'package:diplom/Models/DatabaseClasses/pdfLesson.dart';
+import 'package:diplom/Models/DatabaseClasses/practice.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
+import 'package:diplom/Models/DatabaseClasses/userPractice.dart';
+import 'package:diplom/Screens/PdfCourse_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -69,6 +73,47 @@ class Api {
     for (var mes in raw) {
       res.add(Message.fromMap(mes));
     }
+    return res;
+  }
+
+  Future<List<UserPractice>> loadUserPractices(int lessonID) async {
+    final client = GetIt.I.get<Supabase>().client;
+    final result = await client
+        .from('UserPractices')
+        .select('*').eq('lesson', lessonID);
+    final raw = result as List<dynamic>;
+    List<UserPractice> res = [];
+    for (var mes in raw) {
+      res.add(UserPractice.fromMap(mes));
+    }
+    return res;
+  }
+
+  Future<List<PDFLesson>> loadPDFSLesson(int lesson) async {
+     final client = GetIt.I.get<Supabase>().client;
+     final result = await client
+        .from('pdfLesson')
+        .select('*').eq('idLesson', lesson);
+    final raw = result as List<dynamic>;
+    List<PDFLesson> res = [];
+    for (var mes in raw) {
+      res.add(PDFLesson.fromMap(mes));
+    }
+    return res;
+  }
+
+  Future<List<Practise>> loadPractices(int lesson) async {
+     final client = GetIt.I.get<Supabase>().client;
+     final result = await client
+        .from('Practices')
+        .select('*').eq('lesson', lesson);
+    GetIt.I<Talker>().good("govmo $result");
+    final raw = result as List<dynamic>;
+    List<Practise> res = [];
+    for (var mes in raw) {
+      res.add(Practise.fromMap(mes));
+    }
+    GetIt.I<Talker>().debug(res);
     return res;
   }
 

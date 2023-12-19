@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -34,8 +35,10 @@ class _CourseTestBlockState extends State<CourseTestBlock> {
       child: SingleChildScrollView(
         child: Column(
           children: widget.tests.map((e) {
-            final Map<String, dynamic> test = e;
-            final List<dynamic> internalTests = test['questions'];
+            GetIt.I.get<Talker>().good(e);
+            final Map<String, dynamic> test = jsonDecode(e);
+            // final List<dynamic> internalTests = test['questions'];
+            final List<dynamic> internalTests = test['answers'];
             List<TestTile> pagetests = internalTests
                 .map((e) => TestTile(
                       test: e,

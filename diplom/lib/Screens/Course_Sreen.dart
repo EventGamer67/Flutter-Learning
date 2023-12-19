@@ -163,7 +163,7 @@ class _CourseScreenState extends State<CourseScreen> {
                                               color: Colors.black,
                                               fontFamily: 'Comic Sans'),
                                         ),
-                                        leading: Icon(Icons.school_outlined,
+                                        leading: Icon(e.getLessonTypeIcon(),
                                             color: Colors.blue),
                                       ))
                                   .toList(),

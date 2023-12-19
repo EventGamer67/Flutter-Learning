@@ -61,7 +61,6 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color.fromARGB(255, 52, 152, 219),
         body: SafeArea(
             child: Container(
           decoration: const BoxDecoration(
