@@ -1,10 +1,9 @@
-// ignore_for_file: non_constant_identifier_names
-
-import 'dart:convert';
+// ignore_for_file: non_constant_identifier_names, must_be_immutable
 
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/yesNoDialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -37,27 +36,42 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
   _completeTest() {
     final int correctAnswers = 0;
     int iteration = 0;
+    double correct = 0;
     for (var quest in questions) {
       final answers = choosedAnswers[iteration];
       final List<int> corrects = List<int>.from(quest['corrects']);
       GetIt.I.get<Talker>().good(corrects);
       GetIt.I.get<Talker>().good(answers);
       if (quest['type'] == 'multiple') {
-        if(corrects.length == answers.length && corrects.every((element) => answers.contains(element))){
+        if (corrects.length == answers.length &&
+            corrects.every((element) => answers.contains(element))) {
           GetIt.I.get<Talker>().good("all corrects");
-        }else {
+          correct += 1;
+        } else {
           GetIt.I.get<Talker>().critical("smth wrong");
         }
       } else if (quest['type'] == 'single') {
-        if(corrects.length == answers.length && corrects.every((element) => answers.contains(element))){
+        if (corrects.length == answers.length &&
+            corrects.every((element) => answers.contains(element))) {
           GetIt.I.get<Talker>().good("all corrects");
-        }else {
+          correct += 1;
+        } else {
           GetIt.I.get<Talker>().critical("smth wrong");
         }
       }
-      GetIt.I.get<Talker>().debug(quest['answers']);
       iteration++;
     }
+
+    if (correct == questions.length) {
+      Api().completetest(widget.lesson.id, GetIt.I.get<Data>().user.id);
+    }
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TestResultScreen(
+                  count: questions.length.toDouble(),
+                  corrects: correct,
+                )));
   }
 
   @override
@@ -94,87 +108,90 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
               return const CircularProgressIndicator();
             } else if (state is Loaded) {
               int iteration = 0;
-              return Container(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: LinearProgressIndicator(
-                              color: Colors.green,
-                              minHeight: 10,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20)),
-                              value: currentPage / questions.length,
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: PageView(
-                          onPageChanged: (value) {
-                            _pageChanged(value);
-                          },
-                          controller: _pageController,
-                          children: [
-                            for (var e in questions)
-                              TestTile(
-                                  question: e,
-                                  choosedAnswersQuestion:
-                                      choosedAnswers[iteration++])
-                          ]
-                          //children: questions.map((e) => TestTile(question: e, choosedAnswersQuestion: [] ,)).toList(),
-                          ),
-                    ),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: GestureDetector(
-                        onTap: () {
-                          if (currentPage == questions.length - 1) {
-                            _completeTest();
-                          } else {
-                            _pageController.nextPage(
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeOutCirc);
-                          }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: LinearProgressIndicator(
+                            color: Colors.green,
+                            minHeight: 10,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                            value: currentPage / (questions.length - 1)),
+                      )
+                    ],
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: PageView(
+                        onPageChanged: (value) {
+                          _pageChanged(value);
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                              color: currentPage == questions.length - 1
-                                  ? Colors.green
-                                  : const Color.fromARGB(255, 52, 152, 219),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20))),
-                          height: 60,
-                          child: Center(
-                              child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: currentPage == questions.length - 1
-                                ? Text(
-                                    "Завершить",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontFamily: 'Comic Sans'),
-                                  )
-                                : Text(
-                                    "Далее",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontFamily: 'Comic Sans'),
-                                  ),
-                          )),
+                        controller: _pageController,
+                        children: [
+                          for (var e in questions)
+                            TestTile(
+                                question: e,
+                                choosedAnswersQuestion:
+                                    choosedAnswers[iteration++])
+                        ]
+                        //children: questions.map((e) => TestTile(question: e, choosedAnswersQuestion: [] ,)).toList(),
                         ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    child: GestureDetector(
+                      onTap: () async {
+                        if (currentPage == questions.length - 1) {
+                          final bool res = await showAlertDialog(
+                              header: 'Внимание',
+                              message: 'Завершить тест?',
+                              context: context,
+                              noText: 'Нет',
+                              yesText: 'Завершить');
+                          if (res) {
+                            _completeTest();
+                          }
+                        } else {
+                          _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOutCirc);
+                        }
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: currentPage == questions.length - 1
+                                ? Colors.green
+                                : const Color.fromARGB(255, 52, 152, 219),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        height: 60,
+                        child: Center(
+                            child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: currentPage == questions.length - 1
+                              ? const Text(
+                                  "Завершить",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontFamily: 'Comic Sans'),
+                                )
+                              : const Text(
+                                  "Далее",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontFamily: 'Comic Sans'),
+                                ),
+                        )),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             } else if (state is FailedLoading) {
               return const Text('FailedLoad');
@@ -214,7 +231,7 @@ class _TestTileState extends State<TestTile> {
         text: e['text'],
         id: e['id'],
         onTap: _answerTileTapped,
-        selected: this.widget.choosedAnswersQuestion.contains(e['id']),
+        selected: widget.choosedAnswersQuestion.contains(e['id']),
       );
     }).toList();
   }
@@ -327,6 +344,113 @@ class AnswerTile extends StatelessWidget {
             child: Text(text),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class TestResultScreen extends StatefulWidget {
+  final double count;
+  final double corrects;
+  const TestResultScreen(
+      {super.key, required this.corrects, required this.count});
+  @override
+  State<TestResultScreen> createState() => _TestResultScreenState();
+}
+
+class _TestResultScreenState extends State<TestResultScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Завершение теста'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          const Text(
+            'Тест завершен',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+          ),
+          const Text(
+            'Название теста',
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Stack(children: [
+            SizedBox(
+                width: 100,
+                height: 100,
+                child: Icon(
+                  Icons.school_rounded,
+                  color: widget.corrects == widget.count
+                      ? Colors.blue
+                      : Colors.red,
+                  size: 52,
+                )),
+            SizedBox(
+              width: 100,
+              height: 100,
+              child: CircularProgressIndicator(
+                strokeWidth: 8,
+                value: widget.corrects / widget.count,
+                color:
+                    widget.corrects == widget.count ? Colors.blue : Colors.red,
+                backgroundColor: widget.corrects == widget.count
+                    ? Colors.blue.withOpacity(0.3)
+                    : Colors.red.withOpacity(0.3),
+              ),
+            ),
+          ]),
+          const SizedBox(
+            height: 10,
+          ),
+          Center(
+            child: Text(
+              '${widget.corrects}/${widget.count}',
+              style: const TextStyle(fontSize: 36),
+            ),
+          ),
+          widget.corrects == widget.count
+              ? const Center(
+                  child: Text(
+                    'Тест завершен',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                )
+              : const Center(
+                  child: Text(
+                    'Тест провален',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 100.0),
+            child: GestureDetector(
+              onTap: () {
+                GetIt.I.get<Talker>().debug("clicked");
+                Navigator.pop(context);
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(20)),
+                child: const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Хорошо',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ]),
       ),
     );
   }

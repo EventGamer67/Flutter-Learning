@@ -13,6 +13,7 @@ import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Models/DatabaseClasses/userPractice.dart';
 import 'package:diplom/Services/Data.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -78,6 +79,21 @@ class Api {
       res.add(Message.fromMap(mes));
     }
     return res;
+  }
+
+  Future<bool> completetest(int praciceID, int userID) async {
+    final client = GetIt.I.get<Supabase>().client;
+
+    try{
+      final response = await client.from('LessonsProgress').insert({'LessonID':praciceID,'UserID':userID});
+      GetIt.I.get<Talker>().good('Test completed to server');
+      return true;
+    }
+    catch(error)
+    {
+      GetIt.I.get<Talker>().critical(error);
+      return false;
+    }
   }
 
   Future<List<UserPractice>> loadUserPractices(int lessonID) async {
