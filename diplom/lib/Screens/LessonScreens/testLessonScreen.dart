@@ -72,64 +72,68 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
 
 class TestTile extends StatefulWidget {
   final Map<String, dynamic> question;
-  const TestTile({super.key, required this.question});
+  const TestTile({Key? key, required this.question}) : super(key: key);
 
   @override
   State<TestTile> createState() => _TestTileState();
 }
 
 class _TestTileState extends State<TestTile> {
-  List<dynamic> answers = [];
-  String type = '';
-
-  List<AnswerTile> widgetAnswers = [];
+  late List<dynamic> answers;
+  late String type;
+  late List<AnswerTile> widgetAnswers;
 
   @override
   void initState() {
     super.initState();
     type = widget.question['type'];
-    answers = widget.question['answers'];
+    answers = List.from(widget.question['answers']);
     widgetAnswers = answers.map((e) {
       return AnswerTile(
         key: UniqueKey(),
         text: e['text'],
         id: e['id'],
-        onTap: _AnswerTileTapped,
-        selecteasd: false,
+        onTap: _answerTileTapped,
+        selected: false,
       );
     }).toList();
   }
 
-  _AnswerTileTapped(int id) {
-  if (type == 'single') {
-      for (var element in widgetAnswers.where((element) => element.id != id)) {
-        element.selecteasd = false;
+  void _answerTileTapped(int id) {
+    setState(() {
+      if (type == 'single') {
+        widgetAnswers = widgetAnswers.map((e) {
+          return e.id == id
+              ? e.copyWith(selected: true)
+              : e.copyWith(selected: false);
+        }).toList();
+      } else if (type == 'multiple') {
+        widgetAnswers = widgetAnswers.map((e) {
+          return e.id == id ? e.copyWith(selected: !e.selected) : e;
+        }).toList();
       }
-  } else if (type == 'multiple') {
-
+    });
   }
-  setState(() {
-    
-  });
-}
 
   @override
   Widget build(BuildContext context) {
-    GetIt.I.get<Talker>().good("rebuild");
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-            border: Border.all(
-                color: const Color.fromARGB(255, 52, 152, 219), width: 2)),
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          border: Border.all(
+            color: const Color.fromARGB(255, 52, 152, 219),
+            width: 2,
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(6.0),
           child: Column(
             children: [
               Text(widget.question['text']),
               Text(type),
-              Column(children: widgetAnswers)
+              Column(children: widgetAnswers),
             ],
           ),
         ),
@@ -138,52 +142,57 @@ class _TestTileState extends State<TestTile> {
   }
 }
 
-class AnswerTile extends StatefulWidget {
+class AnswerTile extends StatelessWidget {
   final Function(int id) onTap;
   final int id;
   final String text;
-  bool selecteasd = false;
-  AnswerTile(
-      {
-      required Key? key,
-      required this.onTap,
-      required this.id,
-      required this.text,
-      required this.selecteasd}):super(key:key);
+  final bool selected;
 
-  @override
-  State<AnswerTile> createState() => _AnswerTileState();
-}
+  AnswerTile copyWith({
+    Function(int id)? onTap,
+    int? id,
+    String? text,
+    bool? selected,
+  }) {
+    return AnswerTile(
+      key: key ?? UniqueKey(),
+      onTap: onTap ?? this.onTap,
+      id: id ?? this.id,
+      text: text ?? this.text,
+      selected: selected ?? this.selected,
+    );
+  }
 
-class _AnswerTileState extends State<AnswerTile> {
-  bool selected = false;
+  const AnswerTile({
+    required Key key,
+    required this.onTap,
+    required this.id,
+    required this.text,
+    required this.selected,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    selected = this.widget.selecteasd;
-    GetIt.I.get<Talker>().critical("${this.widget.id} updated selected ${this.selected} final  ${this.widget.selecteasd} ");
     return GestureDetector(
       onTap: () {
-        setState(() {
-          widget.onTap.call(widget.id);
-          this.widget.selecteasd = !this.widget.selecteasd;
-        });
+        onTap.call(id);
       },
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-              borderRadius: const BorderRadius.all(Radius.circular(20)),
-              border: Border.all(
-                width: 2,
-                color: selected
-                    ? Colors.green
-                    : const Color.fromARGB(255, 52, 152, 219),
-              )),
+            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            border: Border.all(
+              width: 2,
+              color: selected
+                  ? Colors.green
+                  : const Color.fromARGB(255, 52, 152, 219),
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(widget.text),
+            child: Text(text),
           ),
         ),
       ),
