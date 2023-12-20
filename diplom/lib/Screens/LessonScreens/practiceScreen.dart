@@ -1,22 +1,19 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:ui';
+// ignore_for_file: file_names
 
+import 'dart:io';
 import 'package:diplom/Models/DatabaseClasses/pdfLesson.dart';
 import 'package:diplom/Models/DatabaseClasses/practice.dart';
 import 'package:diplom/Models/DatabaseClasses/userPractice.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
+import 'package:diplom/Services/Tools.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
-import 'package:diplom/Widgets/course_testBlock.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-import 'dart:io';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,7 +36,6 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     //_showAboutDialog();
     loadbloc = loadBloc();
@@ -53,37 +49,33 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
     loadbloc.add(LoadLoaded());
   }
 
-  _showAboutDialog() {
-    Future.delayed(const Duration(seconds: 1), () {
-      showDialog(
-          context: context,
-          builder: (context) {
-            return Container(
-              child: Center(
-                child: Column(
-                  children: [
-                    Text(widget.lesson.name),
-                    Container(
-                      child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Image.network(widget.lesson.media)),
-                    ),
-                    Text(widget.lesson.text),
-                    Container(
-                      decoration: const BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                      child: const Center(
-                        child: Text("ok"),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            );
-          });
-    });
-  }
+  // _showAboutDialog() {
+  //   Future.delayed(const Duration(seconds: 1), () {
+  //     showDialog(
+  //         context: context,
+  //         builder: (context) {
+  //           return Center(
+  //             child: Column(
+  //               children: [
+  //                 Text(widget.lesson.name),
+  //                 AspectRatio(
+  //                     aspectRatio: 16 / 9,
+  //                     child: Image.network(widget.lesson.media)),
+  //                 Text(widget.lesson.text),
+  //                 Container(
+  //                   decoration: const BoxDecoration(
+  //                       color: Colors.red,
+  //                       borderRadius: BorderRadius.all(Radius.circular(20))),
+  //                   child: const Center(
+  //                     child: Text("ok"),
+  //                   ),
+  //                 )
+  //               ],
+  //             ),
+  //           );
+  //         });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -141,15 +133,15 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
                         bloc: loadbloc,
                         builder: (context, state) {
                           if (state is Loading) {
-                            return Container(
+                            return const SizedBox(
                               height: 300,
-                              child: const Center(child: Text("Loading")),
+                              child: Center(child: Text("Loading")),
                             );
                           } else if (state is LoadFailedLoading) {
-                            return Container(
+                            return const SizedBox(
                               height: 300,
                               child:
-                                  const Center(child: Text("Loading failed")),
+                                  Center(child: Text("Loading failed")),
                             );
                           } else if (state is Loaded) {
                             return PDFPracticeLessonBloc(
@@ -162,15 +154,15 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
                         bloc: loadbloc,
                         builder: (context, state) {
                           if (state is Loading) {
-                            return Container(
+                            return const SizedBox(
                               height: 300,
-                              child: const Center(child: Text("Loading")),
+                              child: Center(child: Text("Loading")),
                             );
                           } else if (state is LoadFailedLoading) {
-                            return Container(
+                            return const SizedBox(
                               height: 300,
                               child:
-                                  const Center(child: Text("Loading failed")),
+                                  Center(child: Text("Loading failed")),
                             );
                           } else if (state is Loaded) {
                             return practices.isNotEmpty
@@ -213,18 +205,19 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
 
   @override
   void initState() {
-    // TODO: implement initState
     loadbloc = loadBloc();
     practise = widget.practices[0];
-    _editingController = TextEditingController(text: "_");
+    _editingController = TextEditingController(text: "");
     _loadSendedPractices();
     super.initState();
   }
 
   _loadSendedPractices() async {
-    sendedPractices = await Api().loadUserPractices(this.widget.lesson);
+    sendedPractices = await Api().loadUserPractices(widget.lesson);
     sended = sendedPractices.isEmpty ? false : true;
-    GetIt.I.get<Talker>().good(sended);
+    if (sended) {
+      _editingController.text = sendedPractices[0].text;
+    }
     loadbloc.add(LoadLoaded());
   }
 
@@ -248,20 +241,34 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
 
         // Загружаем файл в bucket
         var response = await supabase.client.storage.from('docs/practices').upload(
-            'User-${GetIt.I.get<Data>().user.id}-${widget.lesson}-${iteration}-${DateTime.now()}',
+            'User-${GetIt.I.get<Data>().user.id}-${widget.lesson}-$iteration-${DateTime.now()}',
             File(filePath));
         GetIt.I.get<Talker>().good(response);
+        uploadedFiles.add(filePath.split('/').last);
         iteration++;
       }
-
+      GetIt.I.get<Talker>().debug(uploadedFiles.toString());
       await supabase.client.from('UserPractices').insert({
         'user': '${GetIt.I.get<Data>().user.id}',
         'lesson': '${widget.lesson}',
         'text': _editingController.text,
-        'fileLinks': uploadedFiles.toString()
+        'fileLinks': uploadedFiles
+            .toString()
+            .substring(1, uploadedFiles.toString().length - 1)
       });
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Отправлено")));
+      sendedPractices.add(UserPractice(
+          id: -1,
+          user: GetIt.I.get<Data>().user.id,
+          lesson: widget.lesson,
+          text: _editingController.text,
+          fileLinks: uploadedFiles
+              .toString()
+              .substring(1, uploadedFiles.toString().length - 1)));
+      setState(() {
+        sended = true;
+      });
     } catch (error) {
       GetIt.I.get<Talker>().critical(error);
       ScaffoldMessenger.of(context)
@@ -271,239 +278,210 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
 
   @override
   Widget build(BuildContext context) {
-    return sended
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                  alignment: Alignment.centerLeft,
-                  child: const Text("Задание прикреплено, ожидайте проверки",
-                      style: TextStyle(fontFamily: 'Comic Sans'))),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Ваш ответ",
-                    style: TextStyle(fontFamily: 'Comic Sans'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2,
-                            color: const Color.fromARGB(255, 52, 152, 219)),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: EditableText(
-                          controller: _editingController,
-                          focusNode: FocusNode(),
-                          expands: true,
-                          maxLines: null,
-                          style: const TextStyle(color: Colors.black),
-                          cursorColor: const Color.fromARGB(255, 52, 152, 219),
-                          backgroundCursorColor: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      child: files.isNotEmpty
-                          ? Column(
-                              children: [
-                                Container(
-                                  child: const Text("Ваши файлы:"),
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: files
-                                        .map((e) => Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                e.split('/').last,
-                                                maxLines: 1,
-                                              ),
-                                            ))
-                                        .toList()),
-                              ],
-                            )
-                          : const SizedBox()),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+    return BlocBuilder(
+      bloc: loadbloc,
+      builder: (context, state) {
+        return sended
+            ? Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          _loadFile();
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 52, 152, 219),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          child: const Center(
+                      Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                              "Задание прикреплено, ожидайте проверки",
+                              style: TextStyle(fontFamily: 'Comic Sans'))),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Ваш отправленный ответ",
+                            style: TextStyle(fontFamily: 'Comic Sans'),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 2,
+                                    color:
+                                        const Color.fromARGB(255, 52, 152, 219)
+                                            .withOpacity(0.3)),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(20))),
                             child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(Icons.add_a_photo_outlined,
-                                  size: 36, color: Colors.white),
+                              padding: const EdgeInsets.all(8.0),
+                              child: EditableText(
+                                  controller: _editingController,
+                                  readOnly: true,
+                                  focusNode: FocusNode(),
+                                  expands: true,
+                                  maxLines: null,
+                                  style: const TextStyle(color: Colors.black),
+                                  cursorColor:
+                                      const Color.fromARGB(255, 52, 152, 219),
+                                  backgroundCursorColor: Colors.black),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      uploadFilesToBucket.call(files: files);
-                    },
-                    child: Container(
-                      height: 40,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          color: Color.fromARGB(255, 52, 152, 219)),
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "Send",
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: 'Comic Sans'),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
+                          Container(
+                              child: sendedPractices[0].fileLinks.isNotEmpty
+                                  ? Column(
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: const Text("Ваши прикрепленные файлы:"),
+                                        ),
+                                        Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: sendedPractices[0]
+                                                .fileLinks
+                                                .split(',')
+                                                .map((e) => Container(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                        e.split('/').last,
+                                                        maxLines: 1,
+                                                      ),
+                                                    ))
+                                                .toList()),
+                                      ],
+                                    )
+                                  : const SizedBox()),
+                        ],
+                      )
+                    ]),
               )
-            ]),
-          )
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                  alignment: Alignment.centerLeft,
-                  child: const Text("Прикрепите задание",
-                      style: TextStyle(fontFamily: 'Comic Sans'))),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Ваш ответ",
-                    style: TextStyle(fontFamily: 'Comic Sans'),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            width: 2,
-                            color: const Color.fromARGB(255, 52, 152, 219)),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20))),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: EditableText(
-                          controller: _editingController,
-                          focusNode: FocusNode(),
-                          expands: true,
-                          maxLines: null,
-                          style: const TextStyle(color: Colors.black),
-                          cursorColor: const Color.fromARGB(255, 52, 152, 219),
-                          backgroundCursorColor: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                      child: files.isNotEmpty
-                          ? Column(
-                              children: [
-                                Container(
-                                  child: const Text("Ваши файлы:"),
-                                  alignment: Alignment.centerLeft,
-                                ),
-                                Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: files
-                                        .map((e) => Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Text(
-                                                e.split('/').last,
-                                                maxLines: 1,
-                                              ),
-                                            ))
-                                        .toList()),
-                              ],
-                            )
-                          : const SizedBox()),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+            : Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          _loadFile();
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 52, 152, 219),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10))),
-                          child: const Center(
+                      Container(
+                          alignment: Alignment.centerLeft,
+                          child: const Text("Прикрепите задание",
+                              style: TextStyle(fontFamily: 'Comic Sans'))),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Ваш ответ",
+                            style: TextStyle(fontFamily: 'Comic Sans'),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    width: 2,
+                                    color: const Color.fromARGB(
+                                        255, 52, 152, 219)),
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(20))),
                             child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Icon(Icons.add_a_photo_outlined,
-                                  size: 36, color: Colors.white),
+                              padding: const EdgeInsets.all(8.0),
+                              child: EditableText(
+                                  controller: _editingController,
+                                  focusNode: FocusNode(),
+                                  expands: true,
+                                  maxLines: null,
+                                  style: const TextStyle(color: Colors.black),
+                                  cursorColor:
+                                      const Color.fromARGB(255, 52, 152, 219),
+                                  backgroundCursorColor: Colors.black),
                             ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      uploadFilesToBucket.call(files: files);
-                    },
-                    child: Container(
-                      height: 40,
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          color: Color.fromARGB(255, 52, 152, 219)),
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "Send",
-                            style: TextStyle(
-                                color: Colors.white, fontFamily: 'Comic Sans'),
+                          const SizedBox(
+                            height: 10,
                           ),
-                        ),
-                      ),
-                    ),
-                  )
-                ],
-              )
-            ]),
-          );
+                          Container(
+                              child: files.isNotEmpty
+                                  ? Column(
+                                      children: [
+                                        Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: const Text("Ваши файлы:"),
+                                        ),
+                                        Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: files
+                                                .map((e) => Container(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                        e.split('/').last,
+                                                        maxLines: 1,
+                                                      ),
+                                                    ))
+                                                .toList()),
+                                      ],
+                                    )
+                                  : const SizedBox()),
+                          const Divider(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  _loadFile();
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                      color: Color.fromARGB(255, 52, 152, 219),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
+                                  child: const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(Icons.add_a_photo_outlined,
+                                          size: 36, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              uploadFilesToBucket.call(files: files);
+                            },
+                            child: Container(
+                              height: 40,
+                              width: double.infinity,
+                              decoration: const BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(20)),
+                                  color: Color.fromARGB(255, 52, 152, 219)),
+                              child: const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Send",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: 'Comic Sans'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      )
+                    ]),
+              );
+      },
+    );
   }
 }
 
@@ -538,18 +516,20 @@ class PDFfileTile extends StatelessWidget {
     String url = file.pdfLink;
 
     // Получаем директорию для сохранения файла
-    Directory? appDocDir = await getApplicationDocumentsDirectory();
-    String filePath = '${appDocDir.path}/myFile.pdf';
+    //Directory? appDocDir = await getApplicationDocumentsDirectory();
+    //String filePath = '${appDocDir.path}/myFile.pdf';
 
     // Скачиваем файл
-    await launch(
-      url, headers: {},
-      // Используем метод GET для скачивания файла
-      // Это может отличаться в зависимости от вашего API для загрузки файлов
-      // Убедитесь, что ваш сервер поддерживает загрузку файлов с помощью GET-запросов
-      forceSafariVC: false,
-      forceWebView: false,
-    );
+    // await launch(
+    //   url, headers: {},
+    //   // Используем метод GET для скачивания файла
+    //   // Это может отличаться в зависимости от вашего API для загрузки файлов
+    //   // Убедитесь, что ваш сервер поддерживает загрузку файлов с помощью GET-запросов
+    //   forceSafariVC: false,
+    //   forceWebView: false,
+    // );
+
+    await launchUrl(Uri.parse(url), mode:LaunchMode.platformDefault);
 
     // Открываем файл после его скачивания
     // В зависимости от типа файла и настроек устройства, можно использовать различные плагины
@@ -591,28 +571,5 @@ class PDFfileTile extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-IconData getFileIcon(String url) {
-  String extension = url.split('.').last.toLowerCase();
-
-  switch (extension) {
-    case 'pdf':
-      return Icons.picture_as_pdf;
-    case 'png':
-      return Icons.image;
-    case 'jpg':
-      return Icons.image;
-    case 'doc':
-      return Icons.description;
-    case 'docx':
-      return Icons.description;
-    case 'pptx':
-      return Icons.slideshow;
-    case 'txt':
-      return Icons.text_snippet;
-    default:
-      return Icons.insert_drive_file;
   }
 }

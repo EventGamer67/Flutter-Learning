@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:flutter/material.dart';
 

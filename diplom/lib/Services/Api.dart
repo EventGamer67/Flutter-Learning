@@ -1,3 +1,7 @@
+// ignore_for_file: file_names, non_constant_identifier_names
+
+import 'dart:convert';
+
 import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:diplom/Models/DatabaseClasses/pdfLesson.dart';
 import 'package:diplom/Models/DatabaseClasses/practice.dart';
@@ -7,7 +11,6 @@ import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Models/DatabaseClasses/userPractice.dart';
-import 'package:diplom/Screens/PdfCourse_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -150,8 +153,8 @@ class Api {
   Future<List<dynamic>> loadLessonTest(int id) async {
     final client = GetIt.I.get<Supabase>().client;
     final result = await client.from('LessonTests').select('*').eq('lesson', id);
-    GetIt.I<Talker>().debug(result);
-    return result;
+    GetIt.I.get<Talker>().critical(jsonDecode(result)['data']);
+    return jsonDecode(result)['data'];
   }
 
   Future<List<Course>> getUserCourses(int userID) async {

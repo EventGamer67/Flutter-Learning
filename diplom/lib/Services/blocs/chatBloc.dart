@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types, file_names
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class chatBloc extends Bloc<ChatEvents, ChatStates> {

@@ -1,9 +1,11 @@
+// ignore_for_file: file_names
+
 import 'dart:async';
 
-import 'package:diplom/Screens/LessonScreen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/question_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -76,7 +78,6 @@ class _ParsedLessonState extends State<ParsedLesson> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _loadJSON(widget.lesson.id);
   }
@@ -172,7 +173,7 @@ class _ParsedLessonState extends State<ParsedLesson> {
           List<dynamic> questions = rawData['Questions'];
           widgets.add(QuestionWidget(header: header, questions: questions));
         } else {
-          print('Invalid data format: $rawData');
+          GetIt.I.get<Talker>().critical('Invalid data format: $rawData');
         }
       }
     }
@@ -211,10 +212,9 @@ class _ParsedLessonState extends State<ParsedLesson> {
               if (state is Loaded) {
                 return _parsedPage();
               } else if (state is Loading) {
-                return Container(
-                    child: const Center(
+                return const Center(
                   child: CircularProgressIndicator(),
-                ));
+                );
               } else if (state is LoadFailedLoading) {
                 return const Expanded(
                     child: Center(

@@ -1,4 +1,4 @@
-  // ignore_for_file: prefer_const_constructors
+  // ignore_for_file: prefer_const_constructors, camel_case_types, file_names
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Screens/Course_Sreen.dart';
@@ -99,37 +99,35 @@ class AllCoursesTile extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: AspectRatio(
                     aspectRatio: 4 / 2.5,
-                    child: Container(
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              courseName,
-                              style: TextStyle(
-                                  shadows: const [
-                                    Shadow(color: Colors.black, blurRadius: 40)
-                                  ],
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontFamily: 'Comic Sans'),
-                            ),
+                    child: Stack(
+                      children: [
+                        Align(
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            courseName,
+                            style: TextStyle(
+                                shadows: const [
+                                  Shadow(color: Colors.black, blurRadius: 40)
+                                ],
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontFamily: 'Comic Sans'),
                           ),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                              difficult,
-                              style: TextStyle(
-                                  shadows: const [
-                                    Shadow(color: Colors.black, blurRadius: 40)
-                                  ],
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontFamily: 'Comic Sans'),
-                            ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: Text(
+                            difficult,
+                            style: TextStyle(
+                                shadows: const [
+                                  Shadow(color: Colors.black, blurRadius: 40)
+                                ],
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontFamily: 'Comic Sans'),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )),
               )),
         ]),

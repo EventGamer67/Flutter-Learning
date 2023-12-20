@@ -3,6 +3,7 @@ import 'dart:convert';
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class MyUser {
   int id;
+  // ignore: non_constant_identifier_names
   int RoleID;
   String password;
   String name;
@@ -13,6 +14,7 @@ class MyUser {
 
   MyUser({
     required this.id,
+    // ignore: non_constant_identifier_names
     required this.RoleID,
     required this.password,
     required this.email,

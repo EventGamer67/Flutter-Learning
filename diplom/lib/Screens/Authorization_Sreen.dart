@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:diplom/Screens/Main_Screen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';

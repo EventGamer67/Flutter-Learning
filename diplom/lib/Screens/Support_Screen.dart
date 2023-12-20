@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -50,7 +52,7 @@ class _SupportSreenState extends State<SupportSreen> {
     try {
       final SupabaseClient sup = GetIt.I.get<Supabase>().client;
       final result = await sup.from('Messages').insert({
-        'message': '$text',
+        'message': text,
         'senderID': '${data.user.id}',
         'takerID': '${-1}',
         'created_at': '${DateTime.now()}'
@@ -113,13 +115,11 @@ class _SupportSreenState extends State<SupportSreen> {
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: Text(
-                  message.message,
-                  textAlign: message.senderID == 1 ? TextAlign.end : TextAlign.start,
-                  style:
-                      const TextStyle(fontSize: 16.0, fontFamily: 'Comic Sans'),
-                ),
+              child: Text(
+                message.message,
+                textAlign: message.senderID == 1 ? TextAlign.end : TextAlign.start,
+                style:
+                    const TextStyle(fontSize: 16.0, fontFamily: 'Comic Sans'),
               ),
             ),
           ),

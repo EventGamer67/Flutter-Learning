@@ -1,3 +1,4 @@
+// ignore: file_names
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Screens/Courselearn_Screen.dart';
@@ -99,10 +100,10 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
                 bloc: loadbloc,
                 builder: ((context, state) {
                   if (state is Loaded) {
-                    return courses.length == 0  
-                        ? Container(
+                    return courses.isEmpty  
+                        ? const SizedBox(
                             height: 300,
-                            child: const Center(
+                            child: Center(
                               child: Text(
                                 "У вас нет записей на курсы",
                                 style: TextStyle(
@@ -206,7 +207,7 @@ class _CourseTileState extends State<CourseTile> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 15,
         )
       ],

@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types, file_names
+
 import 'package:diplom/Screens/AllCourses_Screen.dart';
 import 'package:diplom/Screens/MyCourses_Screen.dart';
 import 'package:diplom/Screens/Profile_Screen.dart';

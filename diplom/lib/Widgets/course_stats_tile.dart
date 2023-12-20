@@ -17,7 +17,7 @@ class CourseStateTile extends StatelessWidget {
         lessons.map((e) => e.type).toSet().toList().contains(element.id));
     GetIt.I.get<Talker>().debug(dat.lessonTypes);
 
-    return Container(
+    return SizedBox(
       height: 148,
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -49,7 +49,7 @@ class StatTile extends StatelessWidget {
   final int completed;
   const StatTile({
     super.key,
-    required LessonType this.lessonType,
+    required this.lessonType,
     required this.completed,
     required this.count,
   });
@@ -58,47 +58,45 @@ class StatTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1 / 1,
-      child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Stack(children: [
-              FittedBox(
-                child: SizedBox(
-                  width: 80,
-                  height: 80,
-                  child: Center(
-                    child: Icon(
-                      lessonType.getLessonTypeIcon(),
-                      size: 32,
-                      color: Color.fromARGB(255, 52, 152, 219),
-                    ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Stack(children: [
+            FittedBox(
+              child: SizedBox(
+                width: 80,
+                height: 80,
+                child: Center(
+                  child: Icon(
+                    lessonType.getLessonTypeIcon(),
+                    size: 32,
+                    color: const Color.fromARGB(255, 52, 152, 219),
                   ),
                 ),
               ),
-              SizedBox(
-                width: 80,
-                height: 80,
-                child: CircularProgressIndicator(
-                  strokeWidth: 5,
-                  value: completed / count,
-                  color: Color.fromARGB(255, 52, 152, 219),
-                  backgroundColor: Colors.black.withOpacity(0.3),
-                ),
-              ),
-            ]),
-            FittedBox(
-              child: Text(
-                lessonType.name,
-                style: TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
+            ),
+            SizedBox(
+              width: 80,
+              height: 80,
+              child: CircularProgressIndicator(
+                strokeWidth: 5,
+                value: completed / count,
+                color: const Color.fromARGB(255, 52, 152, 219),
+                backgroundColor: Colors.black.withOpacity(0.3),
               ),
             ),
-            Text(
-              "${completed}/${count}",
-              style: TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
-            )
-          ],
-        ),
+          ]),
+          FittedBox(
+            child: Text(
+              lessonType.name,
+              style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
+            ),
+          ),
+          Text(
+            "$completed/$count",
+            style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
+          )
+        ],
       ),
     );
   }

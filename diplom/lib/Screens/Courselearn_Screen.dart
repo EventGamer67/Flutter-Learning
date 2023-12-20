@@ -1,24 +1,19 @@
-// ignore_for_file: prefer_const_constructors
-
-import 'dart:io';
+// ignore_for_file: file_names
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
-import 'package:diplom/Screens/LessonScreen.dart';
+import 'package:diplom/Screens/defineLessonPage.dart';
 import 'package:diplom/Screens/LessonScreens/LectureScreen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
+import 'package:diplom/Widgets/certificate_widget.dart';
 import 'package:diplom/Widgets/course_stats_tile.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:diplom/Widgets/lessonCompleteType_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 class CourseLearnScreen extends StatefulWidget {
   final Course course;
@@ -41,7 +36,6 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
   _loadModules() async {
     try {
       modules = await Api().loadModules(widget.course.id);
-
       modules.sort(((a, b) {
         return a.name.compareTo(b.name);
       }));
@@ -79,15 +73,15 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                 expandedHeight: 300.0,
                 flexibleSpace: FlexibleSpaceBar(
                   title: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Container(
                         alignment: Alignment.bottomRight,
                         child: Text(
                           widget.course.name,
                           textAlign: TextAlign.end,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontFamily: 'Comic Sans',
-                            shadows: const [
+                            shadows: [
                               Shadow(color: Colors.black, blurRadius: 40)
                             ],
                           ),
@@ -101,32 +95,30 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
               ),
               SliverToBoxAdapter(
                 child: Container(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 5,
                       ),
                       Stack(
                         children: [
                           LinearProgressIndicator(
-                            color: Color.fromARGB(255, 52, 152, 219),
-                            backgroundColor: Color.fromARGB(60, 43, 197, 244),
+                            color: const Color.fromARGB(255, 52, 152, 219),
+                            backgroundColor:
+                                const Color.fromARGB(60, 43, 197, 244),
                             value: widget.course.progress,
                             minHeight: 40,
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(color: Colors.black),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
                           ),
                           Center(
                             child: Text(
                               'Прогресс ${(widget.course.progress * 100).floor()}%',
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 24.0,
                                   fontFamily: 'Comic Sans',
-                                  shadows: const [
+                                  shadows: [
                                     Shadow(color: Colors.black, blurRadius: 6)
                                   ],
                                   color: Colors.white),
@@ -134,10 +126,10 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                           ),
                         ],
                       ),
-                      Divider(),
+                      const Divider(),
                       Container(
                         alignment: Alignment.bottomLeft,
-                        child: Text(
+                        child: const Text(
                           'Модули:',
                           textAlign: TextAlign.start,
                           style: TextStyle(
@@ -158,7 +150,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                       return Column(
                         children: [
                           CourseStateTile(
-                            course: this.widget.course,
+                            course: widget.course,
                             lessons: lessons,
                           ),
                           Column(
@@ -168,7 +160,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                             return ExpansionTile(
                               title: Text(
                                 e.name,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontFamily: 'Comic Sans', fontSize: 20),
                               ),
                               children: moduleLessons
@@ -178,14 +170,6 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                             e.getLessonState(lessons);
                                         switch (lessonStateTypes) {
                                           case (LessonStateTypes.Current):
-                                            // await Navigator.push(context,
-                                            //     MaterialPageRoute(
-                                            //         builder: (context) {
-                                            //   return ParsedLesson(
-                                            //       lesson: e,
-                                            //       alreadyCompleted: false);
-                                            // }));
-                                            // setState(() {});
                                             await Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -193,27 +177,16 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                                   lesson: e,
                                                   alreadyCompleted: false);
                                             }));
-                                            double completedPercents = this
-                                                    .widget
+                                            double completedPercents = widget
                                                     .course
                                                     .getLessonCompleteCount() /
-                                                this
-                                                    .widget
-                                                    .course
-                                                    .getLessonCount();
-                                            this.widget.course.progress =
+                                                widget.course.getLessonCount();
+                                            widget.course.progress =
                                                 completedPercents;
                                             setState(() {});
                                           case (LessonStateTypes.Blocked):
                                             () {};
                                           case (LessonStateTypes.Completed):
-                                            // await Navigator.push(context,
-                                            //     MaterialPageRoute(
-                                            //         builder: (context) {
-                                            //   return ParsedLesson(
-                                            //       lesson: e,
-                                            //       alreadyCompleted: true);
-                                            // }));
                                             await Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -234,7 +207,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                       ),
                                       title: Text(
                                         e.name,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'Comic Sans'),
                                       ),
@@ -243,8 +216,8 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                       ),
                                       leading: Icon(
                                         e.getLessonTypeIcon(),
-                                        color:
-                                            Color.fromARGB(255, 52, 152, 219),
+                                        color: const Color.fromARGB(
+                                            255, 52, 152, 219),
                                       )))
                                   .toList(),
                             );
@@ -252,14 +225,14 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                         ],
                       );
                     } else if (state is Loading) {
-                      return SizedBox(
+                      return const SizedBox(
                           width: double.infinity,
                           height: 100,
                           child: Center(
                             child: CircularProgressIndicator(),
                           ));
                     } else if (state is FailedLoading) {
-                      return SizedBox(
+                      return const SizedBox(
                         width: double.infinity,
                         height: 100,
                         child: Center(
@@ -275,49 +248,6 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                   },
                 ),
               ),
-              // SliverList(
-              //   delegate: SliverChildBuilderDelegate(
-              //     (BuildContext context, int index) {
-              //       var module = widget.course.modules[index];
-              //       return ExpansionTile(
-              //         title: Text(
-              //           "${index + 1}. ${module.moduleName}",
-              //           style:
-              //               TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
-              //         ),
-              //         children: module.lessons.map((lesson) {
-              //           return ListTile(
-              //             onTap: () {
-              //               Navigator.push(
-              //                   context,
-              //                   MaterialPageRoute(
-              //                       builder: (context) => LessonTestScreen()));
-              //             },
-              //             subtitle: Text(
-              //               lessonNames[lesson.type] ?? 'None',
-              //               style: TextStyle(
-              //                   color: Colors.black.withOpacity(0.5),
-              //                   fontFamily: 'Comic Sans'),
-              //             ),
-              //             title: Text(
-              //               lesson.lessonName,
-              //               style: TextStyle(
-              //                   color: Colors.black,
-              //                   fontFamily: 'Comic Sans',
-              //                   fontSize: 20),
-              //             ),
-              //             trailing: LessonCompleteTypeWidget(
-              //               LessonTypes: LessonStateTypes.Completed,
-              //             ),
-              //             leading:
-              //                 Icon(Icons.school_outlined, color: Colors.blue),
-              //           );
-              //         }).toList(),
-              //       );
-              //     },
-              //     childCount: widget.course.modules.length,
-              //   ),
-              // ),
               SliverToBoxAdapter(
                 child: SertificateWidget(course: widget.course),
               )
@@ -329,266 +259,12 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
   }
 }
 
-class SertificateWidget extends StatelessWidget {
-  final Course course;
-  const SertificateWidget({super.key, required this.course});
 
-  @override
-  Widget build(BuildContext context) {
-    final bool opened = course.progress == 1 ? true : false;
-    //final bool opened = true;
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 40),
-          child: Column(
-            children: [
-              SizedBox(
-                child: Center(
-                    child: Text(
-                  opened
-                      ? "Ты можешь получить свой сертификат! \n Нажми для получения"
-                      : "Еще немного до сертификата!",
-                  style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
-                  textAlign: TextAlign.center,
-                )),
-              ),
-              opened
-                  ? OpenedCertificate(
-                      courseName: course.name,
-                      owner: GetIt.I.get<Data>().user.name,
-                    )
-                  : ClosedCertificate(),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 40,
-        )
-      ],
-    );
-  }
-}
-
-class OpenedCertificate extends StatelessWidget {
-  final String courseName;
-  final String owner;
-  const OpenedCertificate(
-      {super.key, required this.courseName, required this.owner});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        try {
-          String? result = await FilePicker.platform.getDirectoryPath();
-          final ByteData imageData =
-              await rootBundle.load('assets/SertificateBlank.png');
-          final Uint8List imageBytes = imageData.buffer.asUint8List();
-          final ttf = await fontFromAssetBundle('assets/Comic-Sans-MS.ttf');
-
-          pw.MemoryImage image = pw.MemoryImage(imageBytes);
-
-          if (result != null && result.isNotEmpty) {
-            String savePath = result;
-            DateTime now = DateTime.now();
-            String time =
-                "${now.year}.${now.month}.${now.day} ${now.hour}:${now.minute > 9 ? now.minute : "0${now.minute}"}";
-            final pdf = pw.Document();
-            pdf.addPage(
-              pw.Page(
-                pageFormat: PdfPageFormat.a4.landscape,
-                build: (pw.Context context) {
-                  return pw.FullPage(
-                      ignoreMargins: true,
-                      child: pw.Stack(children: [
-                        pw.Image(image, fit: pw.BoxFit.cover),
-                        pw.Padding(
-                          padding: pw.EdgeInsets.all(20),
-                          child: pw.Stack(children: [
-                            pw.Align(
-                                alignment: pw.Alignment(-1, 0.15),
-                                child: pw.Text(owner,
-                                    textAlign: pw.TextAlign.left,
-                                    style: pw.TextStyle(
-                                        font: ttf,
-                                        color: PdfColor.fromHex("4472c4"),
-                                        fontSize: 48))),
-                            pw.Align(
-                                alignment: pw.Alignment(-1, -0.3),
-                                child: pw.Container(
-                                    width: 500,
-                                    height: 200,
-                                    child: pw.FittedBox(
-                                        fit: pw.BoxFit.scaleDown,
-                                        child: pw.Text(courseName,
-                                            textAlign: pw.TextAlign.left,
-                                            style: pw.TextStyle(
-                                                font: ttf,
-                                                color:
-                                                    PdfColor.fromHex("4472c4"),
-                                                fontSize: 48))))),
-                            pw.Align(
-                                alignment: pw.Alignment(-1, -1),
-                                child: pw.Text(time,
-                                    textAlign: pw.TextAlign.left,
-                                    style: pw.TextStyle(
-                                        font: ttf,
-                                        color: PdfColor.fromHex("4472c4"),
-                                        fontSize: 24))),
-                            pw.Align(
-                                alignment: pw.Alignment(0.98, -0.67),
-                                child: pw.Container(
-                                    width: 220,
-                                    height: 220,
-                                    child: pw.FittedBox(
-                                        fit: pw.BoxFit.scaleDown,
-                                        child: pw.Text(courseName,
-                                            //softWrap: true,
-                                            textAlign: pw.TextAlign.center,
-                                            style: pw.TextStyle(
-                                                font: ttf,
-                                                color:
-                                                    PdfColor.fromHex("4472c4"),
-                                                fontSize: 80)))))
-                          ]),
-                        )
-                      ]));
-                },
-              ),
-            );
-
-            final file = File("$savePath/3example.pdf");
-            await file.writeAsBytes(await pdf.save());
-            GetIt.I.get<Talker>().good("File saved at $savePath/example.pdf");
-
-            // Display the PDF preview using the PDFViewer package
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return Scaffold(
-                appBar: AppBar(title: Text('PDF Preview')),
-                body: PdfPreview(
-                  build: (format) => pdf.save(),
-                ),
-              );
-            }));
-          }
-        } catch (err) {
-          GetIt.I.get<Talker>().critical("$err");
-        }
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border.all(color: Colors.blue, width: 3),
-            image: DecorationImage(
-                image: AssetImage('assets/Sertificate.png'), fit: BoxFit.cover),
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        child: Stack(children: [
-          AspectRatio(
-            aspectRatio: 4 / 2.5,
-            child: Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.only(top: 60),
-              padding: EdgeInsets.all(20),
-              child: Text(
-                "",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontFamily: 'Comic Sans', overflow: TextOverflow.fade),
-              ),
-            ),
-          ),
-        ]),
-      ),
-    );
-  }
-}
-
-class ClosedCertificate extends StatelessWidget {
-  const ClosedCertificate({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.black.withAlpha(30),
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-      child: Stack(children: [
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 10, 20, 0),
-          child: Align(
-            alignment: Alignment.topRight,
-            child: Icon(
-              Icons.school_outlined,
-              size: 80,
-              color: Colors.black.withOpacity(0.3),
-            ),
-          ),
-        ),
-        AspectRatio(
-          aspectRatio: 4 / 2.5,
-          child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 60),
-            padding: EdgeInsets.all(20),
-            child: Text(
-              "Ты отлично справляешься! \nПродолжай учиться для открытия сертификата!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontFamily: 'Comic Sans', overflow: TextOverflow.fade),
-            ),
-          ),
-        ),
-      ]),
-    );
-  }
-}
-
-class LessonCompleteTypeWidget extends StatelessWidget {
-  final LessonStateTypes LessonTypes;
-
-  const LessonCompleteTypeWidget({super.key, required this.LessonTypes});
-
-  @override
-  Widget build(BuildContext context) {
-    if (LessonTypes == LessonStateTypes.Current) {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.blue, width: 2),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Icon(
-          Icons.arrow_right_rounded,
-          color: Colors.blue,
-          size: 40,
-        ),
-      );
-    } else if (LessonTypes == LessonStateTypes.Completed) {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.green, width: 2),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Icon(
-          Icons.check,
-          color: Colors.green,
-          size: 40,
-        ),
-      );
-    } else if (LessonTypes == LessonStateTypes.Blocked) {
-      return Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.black.withOpacity(0.3), width: 2),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Icon(
-          Icons.lock_outline_rounded,
-          color: Colors.black.withOpacity(0.3),
-          size: 40,
-        ),
-      );
-    }
-    return Container();
-  }
-}
+                                            // await Navigator.push(context,
+                                            //     MaterialPageRoute(
+                                            //         builder: (context) {
+                                            //   return ParsedLesson(
+                                            //       lesson: e,
+                                            //       alreadyCompleted: false);
+                                            // }));
+                                            // setState(() {});

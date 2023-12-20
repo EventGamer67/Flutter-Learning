@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_this
+// ignore_for_file: prefer_const_constructors, unnecessary_this, file_names
 
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
@@ -26,7 +26,7 @@ class _CourseScreenState extends State<CourseScreen> {
   List<Lesson> lessons = [];
   bool alreadyRegistered = false;
   loadBloc loadbloc = loadBloc();
-  OtherUser? author = null;
+  OtherUser? author;
 
   _loadModules() async {
     try {
@@ -48,19 +48,8 @@ class _CourseScreenState extends State<CourseScreen> {
       loadbloc.add(LoadLoaded());
       setState(() {});
     } catch (err) {
-      GetIt.I.get<Talker>().critical('Failed to load modules ${err}');
+      GetIt.I.get<Talker>().critical('Failed to load modules $err');
       loadbloc.add(LoadFailedLoading());
-    }
-  }
-
-  _registerToCourse() async {
-    bool registered = await Api().registerUserToCourse(widget.course.id);
-    if (registered) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Успешно")));
-    } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Ошибка")));
     }
   }
 

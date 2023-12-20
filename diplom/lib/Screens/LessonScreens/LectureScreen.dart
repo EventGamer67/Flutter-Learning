@@ -1,4 +1,6 @@
 
+// ignore_for_file: file_names
+
 import 'dart:async';
 
 import 'package:diplom/Services/Api.dart';
@@ -65,13 +67,10 @@ class _LessonScreenState extends State<LessonScreen> {
 
   _loadlesson() async {
     loadbloc = loadBloc();
-
-    final response = await Api().loadLessonTest(this.widget.lesson.id);
-
+    final response = await Api().loadLessonTest(widget.lesson.id);
     for (var el in response) {
       tests.add(el['data']);
     }
-
     if (!widget.alreadyCompleted) {
       progressBarValue = 0;
       timer = Timer.periodic(const Duration(seconds: 1), _updateProgress);
@@ -140,11 +139,11 @@ class _LessonScreenState extends State<LessonScreen> {
                           if (state is Loaded) {
                             return CourseTestBlock(tests: tests);
                           } else if (state is Loading) {
-                            return Text("Loading");
+                            return const Text("Loading");
                           } else if (state is FailedLoading) {
-                            return Text("failed load");
+                            return const Text("failed load");
                           }
-                          return Text("Exception");
+                          return const Text("Exception");
                         }),
                   ],
                 ),
