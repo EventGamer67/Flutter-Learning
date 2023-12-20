@@ -62,4 +62,3 @@ class _CourseTestBlockState extends State<CourseTestBlock> {
     );
   }
 }
-

@@ -62,8 +62,14 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
       iteration++;
     }
 
-    if (correct == questions.length) {
+    if (correct == questions.length &&
+        !GetIt.I
+            .get<Data>()
+            .user
+            .completedLessonsID
+            .contains(widget.lesson.id)) {
       Api().completetest(widget.lesson.id, GetIt.I.get<Data>().user.id);
+      GetIt.I.get<Data>().user.completedLessonsID.add(widget.lesson.id);
     }
     Navigator.pushReplacement(
         context,
@@ -279,8 +285,10 @@ class _TestTileState extends State<TestTile> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(widget.question['text']),
-                Text(type),
+                Text(
+                  widget.question['text'],
+                  style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
+                ),
                 Column(children: widgetAnswers),
               ],
             ),
@@ -341,7 +349,8 @@ class AnswerTile extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text(text),
+            child: Text(text,
+                style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
           ),
         ),
       ),
@@ -363,7 +372,8 @@ class _TestResultScreenState extends State<TestResultScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Завершение теста'),
+        title: const Text('Завершение теста',
+            style: TextStyle(fontFamily: 'Comic Sans', fontSize: 28)),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -371,11 +381,17 @@ class _TestResultScreenState extends State<TestResultScreen> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text(
             'Тест завершен',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+            style: TextStyle(
+                fontFamily: 'Comic Sans',
+                fontWeight: FontWeight.bold,
+                fontSize: 32),
           ),
           const Text(
             'Название теста',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+            style: TextStyle(
+                fontFamily: 'Comic Sans',
+                fontWeight: FontWeight.w600,
+                fontSize: 20),
           ),
           const SizedBox(
             height: 10,
@@ -411,20 +427,20 @@ class _TestResultScreenState extends State<TestResultScreen> {
           Center(
             child: Text(
               '${widget.corrects}/${widget.count}',
-              style: const TextStyle(fontSize: 36),
+              style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 36),
             ),
           ),
           widget.corrects == widget.count
               ? const Center(
                   child: Text(
                     'Тест завершен',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
                   ),
                 )
               : const Center(
                   child: Text(
                     'Тест провален',
-                    style: TextStyle(fontSize: 20),
+                    style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
                   ),
                 ),
           Padding(
@@ -443,7 +459,10 @@ class _TestResultScreenState extends State<TestResultScreen> {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       'Хорошо',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(
+                          fontFamily: 'Comic Sans',
+                          color: Colors.white,
+                          fontSize: 20),
                     ),
                   ),
                 ),

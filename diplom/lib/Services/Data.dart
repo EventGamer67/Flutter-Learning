@@ -103,7 +103,9 @@ class Lesson {
       return LessonStateTypes.Completed;
     } else if (id == courseLessons.first.id) {
       return LessonStateTypes.Current;
-    } else if (courseLessons.where((element) => element.id == id - 1).isNotEmpty) {
+    } else if (courseLessons
+        .where((element) => element.id == id - 1)
+        .isNotEmpty) {
       if (data.user.completedLessonsID.contains(
           courseLessons.where((element) => element.id == id - 1).first.id)) {
         return LessonStateTypes.Current;

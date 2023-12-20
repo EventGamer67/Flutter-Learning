@@ -39,7 +39,10 @@ class Api {
 
   Future<OtherUser?> getUser(int id) async {
     final sup = GetIt.I.get<Supabase>();
-    final List<dynamic> user = await sup.client.from('Users').select('id,avatarURL,registerDate,RoleID,name').eq('id', id);
+    final List<dynamic> user = await sup.client
+        .from('Users')
+        .select('id,avatarURL,registerDate,RoleID,name')
+        .eq('id', id);
     GetIt.I.get<Talker>().debug(user);
     return OtherUser.fromMap(user[0]);
   }
@@ -84,13 +87,13 @@ class Api {
   Future<bool> completetest(int praciceID, int userID) async {
     final client = GetIt.I.get<Supabase>().client;
 
-    try{
-      final response = await client.from('LessonsProgress').insert({'LessonID':praciceID,'UserID':userID});
+    try {
+      final response = await client
+          .from('LessonsProgress')
+          .insert({'LessonID': praciceID, 'UserID': userID});
       GetIt.I.get<Talker>().good('Test completed to server');
       return true;
-    }
-    catch(error)
-    {
+    } catch (error) {
       GetIt.I.get<Talker>().critical(error);
       return false;
     }
@@ -98,9 +101,8 @@ class Api {
 
   Future<List<UserPractice>> loadUserPractices(int lessonID) async {
     final client = GetIt.I.get<Supabase>().client;
-    final result = await client
-        .from('UserPractices')
-        .select('*').eq('lesson', lessonID);
+    final result =
+        await client.from('UserPractices').select('*').eq('lesson', lessonID);
     final raw = result as List<dynamic>;
     List<UserPractice> res = [];
     for (var mes in raw) {
@@ -110,10 +112,9 @@ class Api {
   }
 
   Future<List<PDFLesson>> loadPDFSLesson(int lesson) async {
-     final client = GetIt.I.get<Supabase>().client;
-     final result = await client
-        .from('pdfLesson')
-        .select('*').eq('idLesson', lesson);
+    final client = GetIt.I.get<Supabase>().client;
+    final result =
+        await client.from('pdfLesson').select('*').eq('idLesson', lesson);
     final raw = result as List<dynamic>;
     List<PDFLesson> res = [];
     for (var mes in raw) {
@@ -123,10 +124,9 @@ class Api {
   }
 
   Future<List<Practise>> loadPractices(int lesson) async {
-     final client = GetIt.I.get<Supabase>().client;
-     final result = await client
-        .from('Practices')
-        .select('*').eq('lesson', lesson);
+    final client = GetIt.I.get<Supabase>().client;
+    final result =
+        await client.from('Practices').select('*').eq('lesson', lesson);
     GetIt.I<Talker>().good("govmo $result");
     final raw = result as List<dynamic>;
     List<Practise> res = [];
@@ -169,7 +169,8 @@ class Api {
 
   Future<List<dynamic>> loadLessonTest(int id) async {
     final client = GetIt.I.get<Supabase>().client;
-    final result = await client.from('LessonTests').select('*').eq('lesson', id);
+    final result =
+        await client.from('LessonTests').select('*').eq('lesson', id);
     List<dynamic> temp = jsonDecode(result[0]['data']);
     return temp;
   }
@@ -241,9 +242,9 @@ class Api {
     final client = GetIt.I.get<Supabase>().client;
     final res = await client.from('ClosedCourses').select('*');
     GetIt.I.get<Talker>().debug(res);
-    try{
+    try {
       return List<int>.from((res as List<dynamic>).map((e) => e['id'] as int));
-    }catch(err){
+    } catch (err) {
       return [];
     }
   }

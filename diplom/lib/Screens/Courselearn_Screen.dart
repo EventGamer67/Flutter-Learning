@@ -173,7 +173,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                             await Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
-                                              return LessonScreen(
+                                              return defineLessonPage(
                                                   lesson: e,
                                                   alreadyCompleted: false);
                                             }));
@@ -194,6 +194,12 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                                   lesson: e,
                                                   alreadyCompleted: true);
                                             }));
+                                            double completedPercents = widget
+                                                    .course
+                                                    .getLessonCompleteCount() /
+                                                widget.course.getLessonCount();
+                                            widget.course.progress =
+                                                completedPercents;
                                             setState(() {});
                                         }
                                         return;

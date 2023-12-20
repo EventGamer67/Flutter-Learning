@@ -8,22 +8,28 @@ Future<bool> showAlertDialog(
     required String header}) async {
   // set up the buttons
   Widget cancelButton = ElevatedButton(
-    child: Text(noText),
+    child:
+        Text(noText, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
     onPressed: () {
       // returnValue = false;
       Navigator.of(context).pop(false);
     },
   );
   Widget continueButton = ElevatedButton(
-    child: Text(yesText),
+    child: Text(
+      yesText,
+      style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16),
+    ),
     onPressed: () {
       // returnValue = true;
       Navigator.of(context).pop(true);
     },
   ); // set up the AlertDialogs
   AlertDialog alert = AlertDialog(
-    title: Text(header),
-    content: Text(message),
+    title:
+        Text(header, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
+    content:
+        Text(message, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
     actions: [
       cancelButton,
       continueButton,
