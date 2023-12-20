@@ -20,20 +20,21 @@ class TestLessonScreen extends StatefulWidget {
 
 class _TestLessonScreenState extends State<TestLessonScreen> {
   late final loadBloc loadbloc;
+  late final PageController _pageController;
   List<dynamic> questions = [];
+  List<List<int>> choosedAnswers = [];
 
   @override
   void initState() {
     loadbloc = loadBloc();
+    _pageController = PageController();
     super.initState();
     _loadTest();
   }
 
   _loadTest() async {
-    GetIt.I
-        .get<Talker>()
-        .critical(await Api().loadLessonTest(widget.lesson.id));
     questions = await Api().loadLessonTest(widget.lesson.id);
+    choosedAnswers = List.generate(questions.length, (index) => []);
     loadbloc.add(LoadLoaded());
   }
 
@@ -56,9 +57,15 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
             if (state is Loading) {
               return const CircularProgressIndicator();
             } else if (state is Loaded) {
-              return PageView(
-                children: questions.map((e) => TestTile(question: e)).toList(),
-              );
+              int iteration = 0;
+              return PageView(controller: _pageController, children: [
+                for (var e in questions)
+                  TestTile(
+                      question: e,
+                      choosedAnswersQuestion: choosedAnswers[iteration++])
+              ]
+                  //children: questions.map((e) => TestTile(question: e, choosedAnswersQuestion: [] ,)).toList(),
+                  );
             } else if (state is FailedLoading) {
               return const Text('FailedLoad');
             }
@@ -72,7 +79,10 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
 
 class TestTile extends StatefulWidget {
   final Map<String, dynamic> question;
-  const TestTile({Key? key, required this.question}) : super(key: key);
+  List<int> choosedAnswersQuestion;
+  TestTile(
+      {Key? key, required this.question, required this.choosedAnswersQuestion})
+      : super(key: key);
 
   @override
   State<TestTile> createState() => _TestTileState();
@@ -94,7 +104,7 @@ class _TestTileState extends State<TestTile> {
         text: e['text'],
         id: e['id'],
         onTap: _answerTileTapped,
-        selected: false,
+        selected: this.widget.choosedAnswersQuestion.contains(e['id']),
       );
     }).toList();
   }
@@ -102,17 +112,25 @@ class _TestTileState extends State<TestTile> {
   void _answerTileTapped(int id) {
     setState(() {
       if (type == 'single') {
+        widget.choosedAnswersQuestion.clear();
+        widget.choosedAnswersQuestion.add(id);
         widgetAnswers = widgetAnswers.map((e) {
           return e.id == id
               ? e.copyWith(selected: true)
               : e.copyWith(selected: false);
         }).toList();
       } else if (type == 'multiple') {
+        if (widget.choosedAnswersQuestion.contains(id)) {
+          widget.choosedAnswersQuestion.remove(id);
+        } else {
+          widget.choosedAnswersQuestion.add(id);
+        }
         widgetAnswers = widgetAnswers.map((e) {
           return e.id == id ? e.copyWith(selected: !e.selected) : e;
         }).toList();
       }
     });
+    GetIt.I.get<Talker>().debug(widget.choosedAnswersQuestion);
   }
 
   @override
