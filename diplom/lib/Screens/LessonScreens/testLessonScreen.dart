@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
@@ -21,8 +23,42 @@ class TestLessonScreen extends StatefulWidget {
 class _TestLessonScreenState extends State<TestLessonScreen> {
   late final loadBloc loadbloc;
   late final PageController _pageController;
+  double progress = 0;
+  int currentPage = 0;
   List<dynamic> questions = [];
   List<List<int>> choosedAnswers = [];
+
+  _pageChanged(int page) {
+    setState(() {
+      currentPage = page;
+    });
+  }
+
+  _completeTest() {
+    final int correctAnswers = 0;
+    int iteration = 0;
+    for (var quest in questions) {
+      final answers = choosedAnswers[iteration];
+      final List<int> corrects = List<int>.from(quest['corrects']);
+      GetIt.I.get<Talker>().good(corrects);
+      GetIt.I.get<Talker>().good(answers);
+      if (quest['type'] == 'multiple') {
+        if(corrects.length == answers.length && corrects.every((element) => answers.contains(element))){
+          GetIt.I.get<Talker>().good("all corrects");
+        }else {
+          GetIt.I.get<Talker>().critical("smth wrong");
+        }
+      } else if (quest['type'] == 'single') {
+        if(corrects.length == answers.length && corrects.every((element) => answers.contains(element))){
+          GetIt.I.get<Talker>().good("all corrects");
+        }else {
+          GetIt.I.get<Talker>().critical("smth wrong");
+        }
+      }
+      GetIt.I.get<Talker>().debug(quest['answers']);
+      iteration++;
+    }
+  }
 
   @override
   void initState() {
@@ -58,14 +94,88 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
               return const CircularProgressIndicator();
             } else if (state is Loaded) {
               int iteration = 0;
-              return PageView(controller: _pageController, children: [
-                for (var e in questions)
-                  TestTile(
-                      question: e,
-                      choosedAnswersQuestion: choosedAnswers[iteration++])
-              ]
-                  //children: questions.map((e) => TestTile(question: e, choosedAnswersQuestion: [] ,)).toList(),
-                  );
+              return Container(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LinearProgressIndicator(
+                              color: Colors.green,
+                              minHeight: 10,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20)),
+                              value: currentPage / questions.length,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: PageView(
+                          onPageChanged: (value) {
+                            _pageChanged(value);
+                          },
+                          controller: _pageController,
+                          children: [
+                            for (var e in questions)
+                              TestTile(
+                                  question: e,
+                                  choosedAnswersQuestion:
+                                      choosedAnswers[iteration++])
+                          ]
+                          //children: questions.map((e) => TestTile(question: e, choosedAnswersQuestion: [] ,)).toList(),
+                          ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      child: GestureDetector(
+                        onTap: () {
+                          if (currentPage == questions.length - 1) {
+                            _completeTest();
+                          } else {
+                            _pageController.nextPage(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeOutCirc);
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: currentPage == questions.length - 1
+                                  ? Colors.green
+                                  : const Color.fromARGB(255, 52, 152, 219),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          height: 60,
+                          child: Center(
+                              child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: currentPage == questions.length - 1
+                                ? Text(
+                                    "Завершить",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontFamily: 'Comic Sans'),
+                                  )
+                                : Text(
+                                    "Далее",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20,
+                                        fontFamily: 'Comic Sans'),
+                                  ),
+                          )),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
             } else if (state is FailedLoading) {
               return const Text('FailedLoad');
             }
@@ -138,21 +248,25 @@ class _TestTileState extends State<TestTile> {
     return Padding(
       padding: const EdgeInsets.all(6.0),
       child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          border: Border.all(
-            color: const Color.fromARGB(255, 52, 152, 219),
-            width: 2,
-          ),
-        ),
+        alignment: Alignment.center,
+        // decoration: BoxDecoration(
+        //   borderRadius: const BorderRadius.all(Radius.circular(20)),
+        //   border: Border.all(
+        //     color: const Color.fromARGB(255, 52, 152, 219),
+        //     width: 2,
+        //   ),
+        // ),
         child: Padding(
           padding: const EdgeInsets.all(6.0),
-          child: Column(
-            children: [
-              Text(widget.question['text']),
-              Text(type),
-              Column(children: widgetAnswers),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(widget.question['text']),
+                Text(type),
+                Column(children: widgetAnswers),
+              ],
+            ),
           ),
         ),
       ),
