@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first, constant_identifier_names, non_constant_identifier_names, file_names
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -8,6 +9,7 @@ import 'package:get_it/get_it.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/difficultType.dart';
 import 'package:diplom/Models/DatabaseClasses/user.dart';
+import 'package:talker_flutter/talker_flutter.dart';
 
 class Data {
   List<Course> Courses = [];
@@ -99,17 +101,20 @@ class Lesson {
 
   LessonStateTypes getLessonState(List<Lesson> courseLessons) {
     final Data data = GetIt.I.get<Data>();
+    
+    //lesson name sort
+    courseLessons.sort(((a, b) => a.name.compareTo(b.name)));
+
     if (data.user.completedLessonsID.contains(id)) {
       return LessonStateTypes.Completed;
+    //if first in list
     } else if (id == courseLessons.first.id) {
       return LessonStateTypes.Current;
-    } else if (courseLessons
-        .where((element) => element.id == id - 1)
-        .isNotEmpty) {
-      if (data.user.completedLessonsID.contains(
-          courseLessons.where((element) => element.id == id - 1).first.id)) {
-        return LessonStateTypes.Current;
-      }
+    } else if (data.user.completedLessonsID.contains(courseLessons[max<int>(0,courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1 as int)].id)) {
+      // if (data.user.completedLessonsID.contains(courseLessons.where((element) => element.id ==  (courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1)).first.id)) {
+      //   return 
+      // }
+      return LessonStateTypes.Current;
     }
     return LessonStateTypes.Blocked;
   }

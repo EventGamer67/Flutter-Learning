@@ -92,7 +92,7 @@ class _LessonScreenState extends State<LessonScreen> {
       appBar: AppBar(
         title: Column(
           children: [
-            Text(widget.lesson.name.toString()),
+            Text(widget.lesson.name.toString(), style: TextStyle(fontFamily: 'Comic Sans'),),
           ],
         ),
       ),
@@ -112,7 +112,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         return const SizedBox(
                           height: 30,
                           child: Center(
-                            child: Text("Изображение загружается"),
+                            child: Text("Изображение загружается", style: TextStyle(fontFamily: 'Comic Sans')),
                           ),
                         );
                       },
@@ -120,7 +120,7 @@ class _LessonScreenState extends State<LessonScreen> {
                         return const SizedBox(
                           height: 30,
                           child: Center(
-                            child: Text("Ошибка загрузки изображения"),
+                            child: Text("Ошибка загрузки изображения", style: TextStyle(fontFamily: 'Comic Sans')),
                           ),
                         );
                       },
@@ -129,7 +129,7 @@ class _LessonScreenState extends State<LessonScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         widget.lesson.text,
-                        style: const TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18, fontFamily: 'Comic Sans'),
                       ),
                     ),
                   ],

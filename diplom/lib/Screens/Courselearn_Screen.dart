@@ -3,7 +3,6 @@
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Screens/defineLessonPage.dart';
-import 'package:diplom/Screens/LessonScreens/LectureScreen.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
@@ -63,7 +62,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
   Widget build(BuildContext context) {
     GetIt.I.get<Talker>().debug(widget.course.progress);
     return Scaffold(
-      body: SafeArea(
+      body: Container(
         child: Stack(children: [
           CustomScrollView(
             slivers: [

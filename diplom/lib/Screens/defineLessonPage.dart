@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 
 import 'dart:async';
-
 import 'package:diplom/Screens/LessonScreens/LectureScreen.dart';
 import 'package:diplom/Screens/LessonScreens/practiceScreen.dart';
 import 'package:diplom/Screens/LessonScreens/testLessonScreen.dart';
@@ -10,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 Widget defineLessonPage(
@@ -97,8 +95,7 @@ class _VideoLessonScreenState extends State<VideoLessonScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
-    GetIt.I.get<Talker>().critical(this.widget.alreadyCompleted);
+    GetIt.I.get<Talker>().critical(widget.alreadyCompleted);
     super.initState();
     if (!widget.alreadyCompleted) {
       progressBarValue = 0;

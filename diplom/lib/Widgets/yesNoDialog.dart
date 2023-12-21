@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
 
 Future<bool> showAlertDialog(
@@ -9,7 +11,7 @@ Future<bool> showAlertDialog(
   // set up the buttons
   Widget cancelButton = ElevatedButton(
     child:
-        Text(noText, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
+        Text(noText, style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
     onPressed: () {
       // returnValue = false;
       Navigator.of(context).pop(false);
@@ -18,7 +20,7 @@ Future<bool> showAlertDialog(
   Widget continueButton = ElevatedButton(
     child: Text(
       yesText,
-      style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16),
+      style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 16),
     ),
     onPressed: () {
       // returnValue = true;
@@ -27,9 +29,9 @@ Future<bool> showAlertDialog(
   ); // set up the AlertDialogs
   AlertDialog alert = AlertDialog(
     title:
-        Text(header, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
+        Text(header, style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
     content:
-        Text(message, style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
+        Text(message, style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
     actions: [
       cancelButton,
       continueButton,
