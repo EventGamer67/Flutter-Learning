@@ -287,7 +287,7 @@ class _TestTileState extends State<TestTile> {
               children: [
                 Text(
                   widget.question['text'],
-                  style: TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
+                  style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
                 ),
                 Column(children: widgetAnswers),
               ],
