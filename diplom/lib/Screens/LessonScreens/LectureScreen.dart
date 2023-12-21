@@ -27,7 +27,6 @@ class _LessonScreenState extends State<LessonScreen> {
   double progressBarValue = 1.0;
   late final loadBloc loadbloc;
   List<dynamic> tests = [];
-
   @override
   void dispose() {
     timer.cancel();

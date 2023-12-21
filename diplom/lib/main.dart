@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 
+
 Future<void> main() async {
 
   await Supabase.initialize(
@@ -21,6 +22,8 @@ Future<void> main() async {
   GetIt.I.registerSingleton<Talker>(talker);
 
   runApp(const MyApp());
+  //https://stepik.org/course/69057/promo
+
 }
 
 class MyApp extends StatelessWidget {
