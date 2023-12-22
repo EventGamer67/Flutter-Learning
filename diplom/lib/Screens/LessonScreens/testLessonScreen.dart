@@ -90,6 +90,7 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
 
   _loadTest() async {
     questions = await Api().loadLessonTest(widget.lesson.id);
+    questions.shuffle();
     choosedAnswers = List.generate(questions.length, (index) => []);
     loadbloc.add(LoadLoaded());
   }
@@ -231,6 +232,7 @@ class _TestTileState extends State<TestTile> {
     super.initState();
     type = widget.question['type'];
     answers = List.from(widget.question['answers']);
+    answers.shuffle();
     widgetAnswers = answers.map((e) {
       return AnswerTile(
         key: UniqueKey(),
@@ -285,9 +287,13 @@ class _TestTileState extends State<TestTile> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  widget.question['text'],
-                  style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
+                Container(
+                  alignment: Alignment.center,
+                  child: Text(
+                    widget.question['text'],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 20),
+                  ),
                 ),
                 Column(children: widgetAnswers),
               ],

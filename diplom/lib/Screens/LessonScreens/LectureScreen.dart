@@ -27,6 +27,8 @@ class _LessonScreenState extends State<LessonScreen> {
   double progressBarValue = 1.0;
   late final loadBloc loadbloc;
   List<dynamic> tests = [];
+  late final _scrollController;
+  
   @override
   void dispose() {
     timer.cancel();
@@ -55,7 +57,7 @@ class _LessonScreenState extends State<LessonScreen> {
   void _updateProgress(Timer timer) {
     setState(() {
       if (progressBarValue < 1.0) {
-        progressBarValue += 0.1; // Update the progress bar value here
+        progressBarValue += 0.01; // Update the progress bar value here
       } else {
         timer.cancel(); // Cancel the timer when progress reaches 100%
         _lessonCompleted();
@@ -63,26 +65,46 @@ class _LessonScreenState extends State<LessonScreen> {
     });
   }
 
-  _loadlesson() async {
-    loadbloc = loadBloc();
-    //final response = await Api().loadLessonTest(widget.lesson.id);
-    // for (var el in response) {
-    //   tests.add(el['data']);
-    // }
-    if (!widget.alreadyCompleted) {
-      progressBarValue = 0;
-      timer = Timer.periodic(const Duration(seconds: 1), _updateProgress);
-    } else {
-      timer = Timer(const Duration(seconds: 0), () => null);
+  _loadLesson() async {
+  loadbloc = loadBloc();
+  if (!widget.alreadyCompleted) {
+    progressBarValue = 0;
+    int totalCharacters = widget.lesson.text.length;
+    int periodInSeconds = (totalCharacters / 200).ceil(); // Вычисляем общее время в секундах
+    int timerPeriod = periodInSeconds * 1000; // Устанавливаем период таймера (10 раз в секунду)
+    timer = Timer.periodic(Duration(milliseconds: (1000 ~/ 10)), _updateProgress);
+    Timer(Duration(seconds: periodInSeconds), () {
+      timer.cancel(); // Отменяем таймер после указанного времени
+      _lessonCompleted();
+    });
+  } else {
+    timer = Timer(const Duration(seconds: 0), () {});
+  }
+  loadbloc.add(LoadLoaded());
+}
+
+  _scrollListener() {
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
+        !_scrollController.position.outOfRange) {
+
+          if( !GetIt.I.get<Data>().user.completedLessonsID.contains( this.widget.lesson.id) && !this.widget.alreadyCompleted){
+            _lessonCompleted();
+            setState(() {
+              });
+          }
+      
     }
-    loadbloc.add(LoadLoaded());
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _loadlesson();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_scrollListener);
+
+  
+    _loadLesson();
   }
 
   @override
@@ -102,6 +124,7 @@ class _LessonScreenState extends State<LessonScreen> {
                 color: Colors.green, value: progressBarValue),
             Expanded(
               child: SingleChildScrollView(
+                controller: _scrollController,
                 child: Column(
                   children: [
                     Image.network(
