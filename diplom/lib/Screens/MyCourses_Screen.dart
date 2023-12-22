@@ -31,8 +31,9 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       courses = await Api()
           .getUserCourses(GetIt.I.get<Data>().user.id)
           .timeout(const Duration(seconds: 5));
-
+      
       for (Course course in courses) {
+
         course.modules = await Api().loadModules(course.id);
         for (Module module in course.modules) {
           module.lessons = await Api().loadLessons(module.id);

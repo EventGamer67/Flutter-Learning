@@ -240,10 +240,10 @@ class Api {
 
   Future<List<int>> _loadClosedCourses() async {
     final client = GetIt.I.get<Supabase>().client;
-    final res = await client.from('ClosedCourses').select('*');
+    final res = await client.from('ClosedCourses').select('closedcourse');
     GetIt.I.get<Talker>().debug(res);
     try {
-      return List<int>.from((res as List<dynamic>).map((e) => e['id'] as int));
+      return List<int>.from((res as List<dynamic>).map((e) => e['closedcourse'] as int));
     } catch (err) {
       return [];
     }
