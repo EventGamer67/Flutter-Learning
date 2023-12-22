@@ -14,7 +14,7 @@ class AuthorCourseTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Аффтор", style: TextStyle( fontFamily: 'Comic Sans', fontSize: 22 ) ),
+          const Text("Автор", style: TextStyle( fontFamily: 'Comic Sans', fontSize: 22 ) ),
           const SizedBox(height: 10,),
           Row(
             children: [

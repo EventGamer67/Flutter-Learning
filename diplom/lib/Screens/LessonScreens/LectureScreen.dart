@@ -2,12 +2,9 @@
 
 import 'dart:async';
 
-import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:diplom/Services/blocs/loadBloc.dart';
-import 'package:diplom/Widgets/course_testBlock.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
@@ -87,7 +84,7 @@ class _LessonScreenState extends State<LessonScreen> {
     if (_scrollController.offset >= _scrollController.position.maxScrollExtent &&
         !_scrollController.position.outOfRange) {
 
-          if( !GetIt.I.get<Data>().user.completedLessonsID.contains( this.widget.lesson.id) && !this.widget.alreadyCompleted){
+          if( !GetIt.I.get<Data>().user.completedLessonsID.contains( widget.lesson.id) && !widget.alreadyCompleted){
             _lessonCompleted();
             setState(() {
               });

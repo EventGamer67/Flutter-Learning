@@ -1,8 +1,6 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
 import 'dart:convert';
-import 'dart:ffi';
-
 import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:diplom/Models/DatabaseClasses/pdfLesson.dart';
 import 'package:diplom/Models/DatabaseClasses/practice.dart';
@@ -13,7 +11,6 @@ import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Models/DatabaseClasses/userPractice.dart';
 import 'package:diplom/Services/Data.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:talker_flutter/talker_flutter.dart';
