@@ -34,7 +34,7 @@ class _TestLessonScreenState extends State<TestLessonScreen> {
   }
 
   _completeTest() {
-    final int correctAnswers = 0;
+    const int correctAnswers = 0;
     int iteration = 0;
     double correct = 0;
     for (var quest in questions) {
@@ -356,7 +356,7 @@ class AnswerTile extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(text,
-                style: TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
+                style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 16)),
           ),
         ),
       ),

@@ -44,7 +44,7 @@ class _CourseTestBlockState extends State<CourseTestBlock> {
           //         ))
           //     .toList();
 
-          return Column(
+          return const Column(
             children: [
               // Text("Вопрос $page/${pagetests.length}"),
               // SizedBox(

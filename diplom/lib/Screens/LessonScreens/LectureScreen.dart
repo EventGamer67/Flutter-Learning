@@ -24,7 +24,7 @@ class _LessonScreenState extends State<LessonScreen> {
   double progressBarValue = 1.0;
   late final loadBloc loadbloc;
   List<dynamic> tests = [];
-  late final _scrollController;
+  late final ScrollController _scrollController;
   
   @override
   void dispose() {
@@ -69,7 +69,7 @@ class _LessonScreenState extends State<LessonScreen> {
     int totalCharacters = widget.lesson.text.length;
     int periodInSeconds = (totalCharacters / 200).ceil(); // Вычисляем общее время в секундах
     int timerPeriod = periodInSeconds * 1000; // Устанавливаем период таймера (10 раз в секунду)
-    timer = Timer.periodic(Duration(milliseconds: (1000 ~/ 10)), _updateProgress);
+    timer = Timer.periodic(const Duration(milliseconds: (1000 ~/ 10)), _updateProgress);
     Timer(Duration(seconds: periodInSeconds), () {
       timer.cancel(); // Отменяем таймер после указанного времени
       _lessonCompleted();
