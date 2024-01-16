@@ -95,7 +95,6 @@ class _LessonScreenState extends State<LessonScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);

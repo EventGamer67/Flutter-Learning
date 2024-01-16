@@ -155,7 +155,10 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                           Column(
                               children: modules.map((e) {
                             final moduleLessons = lessons
-                                .where((element) => element.moduleID == e.id);
+                                .where((element) => element.moduleID == e.id).toList();
+                                
+                            moduleLessons.sort(((a, b) => a.name.compareTo(b.name)));
+
                             return ExpansionTile(
                               title: Text(
                                 e.name,
@@ -167,6 +170,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                       onTap: () async {
                                         final lessonStateTypes =
                                             e.getLessonState(lessons);
+                                            GetIt.I.get<Talker>().good(e.name);
                                         switch (lessonStateTypes) {
                                           case (LessonStateTypes.Current):
                                             await Navigator.push(context,
