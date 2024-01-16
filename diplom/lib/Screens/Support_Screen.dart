@@ -38,6 +38,8 @@ class _SupportSreenState extends State<SupportSreen> {
   void loadMessages() async {
     messagesNew = await Api().loadMessages(GetIt.I.get<Data>().user.id);
     messagesNew.sort((a,b) { return a.id > b.id ? -1 : 1; } );
+    GetIt.I.get<Data>().users = await Api().loadUsers();
+    GetIt.I.get<Talker>().good(GetIt.I.get<Data>().users);
     bloc.add(ChatLoaded());
   }
 
@@ -90,15 +92,16 @@ class _SupportSreenState extends State<SupportSreen> {
   }
 
   Widget _buildMessage(Message message) {
+    final int myID = GetIt.I.get<Data>().user.id; 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      alignment: message.senderID == 1 ? Alignment.topRight : Alignment.topLeft,
+      alignment: message.senderID == myID ? Alignment.topRight : Alignment.topLeft,
       child: Column(
         crossAxisAlignment:
-            message.senderID == 1 ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            message.senderID == myID ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Text(
-            message.senderID == 1 ? "Вы" : "Администратор",
+            message.senderID == myID ? "Вы" : GetIt.I.get<Data>().getUserName(message.senderID),
             style: const TextStyle(fontFamily: 'Comic Sans'),
           ),
           Container(

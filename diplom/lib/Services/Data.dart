@@ -15,6 +15,12 @@ class Data {
   List<DifficultTypes> difficults = [];
   List<LessonType> lessonTypes = [];
   List<int> ClosedCourses = [];
+  List<(int,String)> users = [];
+
+  getUserName(int id){
+    return users.where((element) => element.$1 == id).toList().first.$2.toString();
+  }
+
   MyUser user = MyUser(
       id: 1,
       RoleID: 1,
@@ -109,7 +115,7 @@ class Lesson {
     //if first in list
     } else if (id == courseLessons.first.id) {
       return LessonStateTypes.Current;
-    } else if (data.user.completedLessonsID.contains(courseLessons[max<int>(0,courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1 as int)].id)) {
+    } else if (data.user.completedLessonsID.contains(courseLessons[max<int>(0,courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1)].id)) {
       // if (data.user.completedLessonsID.contains(courseLessons.where((element) => element.id ==  (courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1)).first.id)) {
       //   return 
       // }

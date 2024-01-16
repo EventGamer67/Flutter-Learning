@@ -67,12 +67,28 @@ class Api {
     }
   }
 
+  Future<List<(int,String)>> loadUsers() async{
+    final client = GetIt.I.get<Supabase>().client;
+     final result = await client
+        .from('Users')
+        .select('id,name');
+    final raw = result as List<dynamic>;
+    List<(int,String)> usrs = [];
+    for(var us in raw){
+      usrs.add((us['id'],us['name']));
+    }
+    return usrs;
+  }
+
   Future<List<Message>> loadMessages(int MeID) async {
     final client = GetIt.I.get<Supabase>().client;
     final result = await client
         .from('Messages')
-        .select('*')
-        .or('senderID.eq.$MeID,takerID.eq.$MeID');
+        .select('*');
+    // final result = await client
+    //     .from('Messages')
+    //     .select('*')
+    //     .or('senderID.eq.$MeID,takerID.eq.$MeID');
     final raw = result as List<dynamic>;
     List<Message> res = [];
     for (var mes in raw) {
@@ -96,10 +112,10 @@ class Api {
     }
   }
 
-  Future<List<UserPractice>> loadUserPractices(int lessonID) async {
+  Future<List<UserPractice>> loadUserPractices(int lessonID, int userID) async {
     final client = GetIt.I.get<Supabase>().client;
     final result =
-        await client.from('UserPractices').select('*').eq('lesson', lessonID);
+        await client.from('UserPractices').select('*').eq('lesson', lessonID).eq('user', userID);
     final raw = result as List<dynamic>;
     List<UserPractice> res = [];
     for (var mes in raw) {
