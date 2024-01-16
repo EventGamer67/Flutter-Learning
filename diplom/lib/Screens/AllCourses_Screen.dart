@@ -34,10 +34,10 @@ class _CoursesGallery_ScreenState extends State<CoursesGallery_Screen> {
         child: SingleChildScrollView(
           child: Column(children: [
             Text(
-              "Все курсы",
+              "Навыки самообразования",
               style: TextStyle(
                   fontFamily: 'Comic Sans',
-                  fontSize: 30,
+                  fontSize: 28,
                   color: Color.fromARGB(255, 52, 152, 219)),
             ),
             ListView.builder(

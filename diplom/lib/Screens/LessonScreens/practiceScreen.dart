@@ -467,7 +467,7 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
                                 child: Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Text(
-                                    "Send",
+                                    "Отправить",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontFamily: 'Comic Sans'),

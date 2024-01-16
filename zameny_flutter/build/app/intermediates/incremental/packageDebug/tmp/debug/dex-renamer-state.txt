@@ -1,0 +1,4 @@
+#Sat Dec 16 17:29:15 YEKT 2023
+base.0=/Users/Penumbra/Documents/GitHub/Flutter-Learning/zameny_flutter/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
