@@ -66,7 +66,7 @@ class _Main_ScreenState extends State<Main_Screen> {
           },
           items: const [
             BottomNavigationBarItem(
-                label: "Мои курсы", icon: Icon(Icons.school_outlined)),
+                label: "Навыки", icon: Icon(Icons.school_outlined)),
             BottomNavigationBarItem(label: "Запись", icon: Icon(Icons.add_box_outlined)),
             BottomNavigationBarItem(
                 label: "Поддержка", icon: Icon(Icons.support_agent_outlined)),

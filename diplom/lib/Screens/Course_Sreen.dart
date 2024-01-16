@@ -100,7 +100,7 @@ class _CourseScreenState extends State<CourseScreen> {
                       Container(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Описание курса: \n${widget.course.description}',
+                          'Описание навыка: \n${widget.course.description}',
                           style: TextStyle(
                               fontSize: 18.0, fontFamily: 'Comic Sans'),
                         ),
@@ -206,7 +206,7 @@ class _CourseScreenState extends State<CourseScreen> {
                           builder: (context) {
                             return CupertinoAlertDialog(
                               title: Text(
-                                "Хотите записаться на курс?",
+                                "Хотите изучить данный навык?",
                                 style: TextStyle(fontFamily: 'Comic Sans'),
                               ),
                               actions: [
@@ -245,12 +245,12 @@ class _CourseScreenState extends State<CourseScreen> {
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   child: Center(
                     child: Text(
-                      alreadyRegistered ? "Вы уже записаны" : "Записаться",
+                      alreadyRegistered ? "Вы уже изучаете данный навык" : "Изучить",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontFamily: 'Comic Sans',
                           color: Colors.white,
-                          fontSize: 22),
+                          fontSize: 18),
                     ),
                   ),
                 ),

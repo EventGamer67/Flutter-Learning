@@ -84,7 +84,7 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  const Text("Развитие навыков самообразования",
+                  const Text("Развитие навыки вместе с нами!",
                       style: TextStyle(
                           color: Color.fromARGB(255, 52, 152, 219),
                           fontFamily: 'Comic Sans',

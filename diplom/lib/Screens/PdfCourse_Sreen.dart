@@ -71,7 +71,7 @@ class _PDFCourseScreenState extends State<PDFCourseScreen> {
                 child: Text("failed"),
               );
             }
-            return const Text("lox");
+            return const Text("Ошибка");
           },
         ));
   }
