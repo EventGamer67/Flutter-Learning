@@ -213,7 +213,7 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
   }
 
   _loadSendedPractices() async {
-    sendedPractices = await Api().loadUserPractices(widget.lesson);
+    sendedPractices = await Api().loadUserPractices(widget.lesson, GetIt.I.get<Data>().user.id);
     sended = sendedPractices.isEmpty ? false : true;
     if (sended) {
       _editingController.text = sendedPractices[0].text;

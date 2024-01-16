@@ -52,6 +52,27 @@ class _AuthrorizationScreenState extends State<AuthrorizationScreen> {
 
     final Data data = GetIt.I.get<Data>();
     data.user = result;
+    if(data.user.RoleID == 2){
+       showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CupertinoAlertDialog(
+              title: const Text(
+                "Вы не можете зайти как администратор",
+                style: TextStyle(fontFamily: 'Comic Sans'),
+              ),
+              actions: [
+                CupertinoButton(
+                    child: const Text("Закрыть",
+                        style: TextStyle(fontFamily: 'Comic Sans')),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    })
+              ],
+            );
+          });
+      return;
+    }
     await Api().loadData();
     Navigator.pushReplacement(
       context,

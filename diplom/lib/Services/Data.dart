@@ -15,6 +15,12 @@ class Data {
   List<DifficultTypes> difficults = [];
   List<LessonType> lessonTypes = [];
   List<int> ClosedCourses = [];
+  List<(int,String)> users = [];
+
+  getUserName(int id){
+    return users.where((element) => element.$1 == id).toList().first.$2.toString();
+  }
+
   MyUser user = MyUser(
       id: 1,
       RoleID: 1,
