@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, file_names, non_constant_identifier_names
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Screens/Authorization_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:flutter/material.dart';
@@ -58,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             CircleAvatar(
               radius: 100,
-              foregroundImage: NetworkImage(avatarURL),
+              foregroundImage: CachedNetworkImageProvider(avatarURL)
             ),
             SizedBox(
               height: 50,

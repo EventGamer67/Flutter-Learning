@@ -1,4 +1,5 @@
 // ignore: file_names
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Models/DatabaseClasses/module.dart';
 import 'package:diplom/Screens/Courselearn_Screen.dart';
@@ -174,7 +175,7 @@ class _CourseTileState extends State<CourseTile> {
                 borderRadius: const BorderRadius.all(Radius.circular(20)),
                 image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage(widget.course.photo)),
+                    image: CachedNetworkImageProvider(widget.course.photo)),
                 border: Border.all(
                     width: 3, color: const Color.fromARGB(255, 52, 152, 219))),
             child: AspectRatio(
