@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:diplom/Models/DatabaseClasses/otherUser.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -15,10 +16,19 @@ class Data {
   List<DifficultTypes> difficults = [];
   List<LessonType> lessonTypes = [];
   List<int> ClosedCourses = [];
-  List<(int,String)> users = [];
+  List<OtherUser> users = [];
 
-  getUserName(int id){
-    return users.where((element) => element.$1 == id).toList().first.$2.toString();
+  getUserName(int id) {
+    return users
+        .where((element) => element.id == id)
+        .toList()
+        .first
+        .name
+        .toString();
+  }
+
+  OtherUser getUserById(int id) {
+    return users.where((element) => element.id == id).toList().first;
   }
 
   MyUser user = MyUser(
@@ -106,18 +116,23 @@ class Lesson {
 
   LessonStateTypes getLessonState(List<Lesson> courseLessons) {
     final Data data = GetIt.I.get<Data>();
-    
+
     //lesson name sort
     courseLessons.sort(((a, b) => a.name.compareTo(b.name)));
 
     if (data.user.completedLessonsID.contains(id)) {
       return LessonStateTypes.Completed;
-    //if first in list
+      //if first in list
     } else if (id == courseLessons.first.id) {
       return LessonStateTypes.Current;
-    } else if (data.user.completedLessonsID.contains(courseLessons[max<int>(0,courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1)].id)) {
+    } else if (data.user.completedLessonsID.contains(courseLessons[max<int>(
+            0,
+            courseLessons.indexOf(
+                    courseLessons.where((element) => element.id == id).first) -
+                1)]
+        .id)) {
       // if (data.user.completedLessonsID.contains(courseLessons.where((element) => element.id ==  (courseLessons.indexOf(courseLessons.where((element) => element.id == id).first)-1)).first.id)) {
-      //   return 
+      //   return
       // }
       return LessonStateTypes.Current;
     }

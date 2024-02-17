@@ -71,13 +71,13 @@ class Api {
     }
   }
 
-  Future<List<(int, String)>> loadUsers() async {
+  Future<List<OtherUser>> loadUsers() async {
     final client = GetIt.I.get<Supabase>().client;
-    final result = await client.from('Users').select('id,name');
+    final result = await client.from('Users').select('id,avatarURL,registerDate,RoleID,name');
     final raw = result as List<dynamic>;
-    List<(int, String)> usrs = [];
+    List<OtherUser> usrs = [];
     for (var us in raw) {
-      usrs.add((us['id'], us['name']));
+      usrs.add(OtherUser.fromMap(us));
     }
     return usrs;
   }

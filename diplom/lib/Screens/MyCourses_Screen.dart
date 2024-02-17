@@ -32,9 +32,8 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
       courses = await Api()
           .getUserCourses(GetIt.I.get<Data>().user.id)
           .timeout(const Duration(seconds: 5));
-      
-      for (Course course in courses) {
 
+      for (Course course in courses) {
         course.modules = await Api().loadModules(course.id);
         for (Module module in course.modules) {
           module.lessons = await Api().loadLessons(module.id);
@@ -50,97 +49,103 @@ class _MyCoursesScreenState extends State<MyCoursesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: SingleChildScrollView(
+          child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
               child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(20),
-              child: const FittedBox(
-                child: Text(
-                  "Добро пожаловать!",
-                  style: TextStyle(
-                      fontFamily: 'Comic Sans',
-                      fontSize: 36,
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(20),
+                  child: const FittedBox(
+                    child: Text(
+                      "Добро пожаловать!",
+                      style: TextStyle(
+                          fontFamily: 'Comic Sans',
+                          fontSize: 36,
+                          color: Color.fromARGB(255, 52, 152, 219)),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
                       color: Color.fromARGB(255, 52, 152, 219)),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Text(
+                      "Самообразование - это форма индивидуальной деятельности, которая мотивирована собственными непосредственными интересами и потребностями человека. В этом окне вы можете увидеть список навыков, на которые вы записаны, и начать изучение любого из них в удобное время. Перейдя в раздел Запись, Вы сможете выбрать доступный навык для изучения после записи на него. Если у вас возникнут вопросы в процессе обучения, перейдите в раздел Поддержка, где Вы сможете задать администратору любые вопросы. В разделе Профиль Вы можете изменить свои данные и просмотреть свой профиль. Удачи в вашем обучении!",
+                      style: TextStyle(
+                          color: Colors.white, fontFamily: 'Comic Sans'),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Color.fromARGB(255, 52, 152, 219)),
-              child: const Padding(
-                padding: EdgeInsets.all(20),
-                child: Text(
-                  "Самообразование - это форма индивидуальной деятельности, которая мотивирована собственными непосредственными интересами и потребностями человека. В этом окне вы можете увидеть список навыков, на которые вы записаны, и начать изучение любого из них в удобное время. Перейдя в раздел Запись, Вы сможете выбрать доступный навык для изучения после записи на него. Если у вас возникнут вопросы в процессе обучения, перейдите в раздел Поддержка, где Вы сможете задать администратору любые вопросы. В разделе Профиль Вы можете изменить свои данные и просмотреть свой профиль. Удачи в вашем обучении!",
-                  style:
-                      TextStyle(color: Colors.white, fontFamily: 'Comic Sans'),
+                const SizedBox(
+                  height: 15,
                 ),
-              ),
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text(
+                    "Ваши изучаемые навыки:",
+                    style: TextStyle(
+                        fontSize: 24,
+                        color: Color.fromARGB(255, 52, 152, 219),
+                        fontFamily: 'Comic Sans'),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: const Text(
-                "Ваши изучаемые навыки:",
-                style: TextStyle(
-                    fontSize: 24,
-                    color: Color.fromARGB(255, 52, 152, 219),
-                    fontFamily: 'Comic Sans'),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            BlocBuilder(
-                bloc: loadbloc,
-                builder: ((context, state) {
-                  if (state is Loaded) {
-                    return courses.isEmpty  
-                        ? const SizedBox(
-                            height: 300,
-                            child: Center(
-                              child: Text(
-                                "У вас нет записей на изучение навыков",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Color.fromARGB(255, 52, 152, 219),
-                                    fontFamily: 'Comic Sans'),
-                              ),
+          )),
+          BlocBuilder(
+              bloc: loadbloc,
+              builder: ((context, state) {
+                if (state is Loaded) {
+                  return courses.isEmpty
+                      ? SliverFillRemaining(
+                          child: Center(
+                            child: Text(
+                              "У вас нет записей на изучение навыков",
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Color.fromARGB(255, 52, 152, 219),
+                                  fontFamily: 'Comic Sans'),
                             ),
-                          )
-                        : Column(
-                            children: courses
-                                .map((e) => CourseTile(
-                                      course: e,
-                                    ))
-                                .toList());
-                  } else if (state is Loading) {
-                    return const SizedBox(
-                      height: 100,
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  } else if (state is FailedLoading) {
-                    return const SizedBox(
-                      height: 100,
-                      child: Center(
-                        child: Text("Failed Load"),
-                      ),
-                    );
-                  }
-                  return Container();
-                })),
-          ],
-        ),
-      ))),
+                          ),
+                        )
+                      : SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                                children: courses
+                                    .map((e) => CourseTile(
+                                          course: e,
+                                        ))
+                                    .toList()),
+                          ),
+                        );
+                } else if (state is Loading) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                } else if (state is FailedLoading) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: Text("Failed Load"),
+                    ),
+                  );
+                }
+                return Container();
+              }))
+        ],
+      )),
     );
   }
 }

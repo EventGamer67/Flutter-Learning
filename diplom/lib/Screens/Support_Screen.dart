@@ -1,5 +1,8 @@
 // ignore_for_file: file_names
 
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -42,7 +45,6 @@ class _SupportSreenState extends State<SupportSreen> {
       return a.id > b.id ? -1 : 1;
     });
     GetIt.I.get<Data>().users = await Api().loadUsers();
-    GetIt.I.get<Talker>().good(GetIt.I.get<Data>().users);
     bloc.add(ChatLoaded());
   }
 
@@ -64,7 +66,6 @@ class _SupportSreenState extends State<SupportSreen> {
       setState(() {
         messagesNew.insert(0, message);
       });
-      GetIt.I.get<Talker>().good(data);
     });
   }
 
@@ -102,53 +103,100 @@ class _SupportSreenState extends State<SupportSreen> {
         reverse: true,
         itemCount: messagesNew.length,
         itemBuilder: (BuildContext context, int index) {
-          return _buildMessage(messagesNew[index]);
+          return _buildMessage(
+              messagesNew[index],
+              messagesNew[min(index + 1, messagesNew.length - 1)],
+              messagesNew[max(index - 1, 0)]);
         },
       ),
     );
   }
 
-  Widget _buildMessage(Message message) {
+  Widget _buildMessage(Message message, Message previous, Message next) {
     final int myID = GetIt.I.get<Data>().user.id;
+    bool isMe = message.senderID == myID ? true : false;
+
+    bool lastSenderIsCurrent = previous.senderID == message.senderID;
+    if (previous.id == message.id) {
+      lastSenderIsCurrent = false;
+    }
+
+    bool nextSenderIsCurrent = next.senderID == message.senderID;
+    if (next.id == message.id) {
+      nextSenderIsCurrent = false;
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      alignment:
-          message.senderID == myID ? Alignment.topRight : Alignment.topLeft,
+      alignment: isMe ? Alignment.topRight : Alignment.topLeft,
       child: Column(
-        crossAxisAlignment: message.senderID == myID
-            ? CrossAxisAlignment.end
-            : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Text(
-            message.senderID == myID
-                ? "Вы"
-                : GetIt.I.get<Data>().getUserName(message.senderID),
-            style: const TextStyle(fontFamily: 'Comic Sans'),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width *
-                0.7, // Примерная ширина сообщения
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(
-                  width: 2,
-                  color: (message.senderID == 1
-                          ? Colors.blue[100]
-                          : Colors.grey[200])!
-                      .withOpacity(1)),
-              color:
-                  message.senderID == 1 ? Colors.blue[100] : Colors.grey[200],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                message.message,
-                textAlign:
-                    message.senderID == 1 ? TextAlign.end : TextAlign.start,
-                style:
-                    const TextStyle(fontSize: 16.0, fontFamily: 'Comic Sans'),
+          lastSenderIsCurrent
+              ? SizedBox()
+              : Text(
+                  isMe
+                      ? "Вы"
+                      : GetIt.I.get<Data>().getUserName(message.senderID),
+                  style: const TextStyle(fontFamily: 'Comic Sans'),
+                ),
+          Row(
+            mainAxisAlignment:
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              isMe
+                  ? SizedBox()
+                  : Container(
+                      padding: EdgeInsets.only(right: 5),
+                      child: nextSenderIsCurrent
+                          ? SizedBox()
+                          : CircleAvatar(
+                              radius: 20,
+                              foregroundImage: CachedNetworkImageProvider(
+                                GetIt.I
+                                    .get<Data>()
+                                    .getUserById(message.senderID)
+                                    .avatarURL,
+                              ),
+                            ),
+                    ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                      width: 2,
+                      color: (isMe ? Colors.blue[100] : Colors.grey[200])!
+                          .withOpacity(1)),
+                  color: isMe ? Colors.blue[100] : Colors.grey[200],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    message.message,
+                    textAlign: isMe ? TextAlign.end : TextAlign.start,
+                    style: const TextStyle(
+                        fontSize: 16.0, fontFamily: 'Comic Sans'),
+                  ),
+                ),
               ),
-            ),
+              !isMe
+                  ? SizedBox()
+                  : Container(
+                      padding: EdgeInsets.only(left: 5),
+                      child: nextSenderIsCurrent
+                          ? SizedBox()
+                          : CircleAvatar(
+                              radius: 20,
+                              foregroundImage: CachedNetworkImageProvider(
+                                GetIt.I
+                                    .get<Data>()
+                                    .getUserById(message.senderID)
+                                    .avatarURL,
+                              ),
+                            ),
+                    ),
+            ],
           ),
         ],
       ),
@@ -215,6 +263,9 @@ class _SupportSreenState extends State<SupportSreen> {
         children: <Widget>[
           Flexible(
             child: TextField(
+              onTapOutside: (event) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
               style: TextStyle(fontFamily: 'Comic Sans'),
               controller: _textController,
               onSubmitted: _handleSubmittedMessage,

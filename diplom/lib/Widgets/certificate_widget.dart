@@ -139,20 +139,21 @@ class OpenedCertificate extends StatelessWidget {
                 },
               ),
             );
-
+            GetIt.I.get<Talker>().good("here");
             final file = File("$savePath/3example.pdf");
             await file.writeAsBytes(await pdf.save());
+            
             GetIt.I.get<Talker>().good("File saved at $savePath/example.pdf");
-
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Сохранено")));
             // Display the PDF preview using the PDFViewer package
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return Scaffold(
-                appBar: AppBar(title: const Text('PDF Preview')),
-                body: PdfPreview(
-                  build: (format) => pdf.save(),
-                ),
-              );
-            }));
+            // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            //   return Scaffold(
+            //     appBar: AppBar(title: const Text('PDF Preview')),
+            //     body: PdfPreview(
+            //       build: (format) => pdf.save(),
+            //     ),
+            //   );
+            // }));
           }
         } catch (err) {
           GetIt.I.get<Talker>().critical("$err");

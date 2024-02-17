@@ -140,8 +140,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
                           } else if (state is LoadFailedLoading) {
                             return const SizedBox(
                               height: 300,
-                              child:
-                                  Center(child: Text("Loading failed")),
+                              child: Center(child: Text("Loading failed")),
                             );
                           } else if (state is Loaded) {
                             return PDFPracticeLessonBloc(
@@ -161,8 +160,7 @@ class _PracticeLessonScreenState extends State<PracticeLessonScreen> {
                           } else if (state is LoadFailedLoading) {
                             return const SizedBox(
                               height: 300,
-                              child:
-                                  Center(child: Text("Loading failed")),
+                              child: Center(child: Text("Loading failed")),
                             );
                           } else if (state is Loaded) {
                             return practices.isNotEmpty
@@ -213,7 +211,8 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
   }
 
   _loadSendedPractices() async {
-    sendedPractices = await Api().loadUserPractices(widget.lesson, GetIt.I.get<Data>().user.id);
+    sendedPractices = await Api()
+        .loadUserPractices(widget.lesson, GetIt.I.get<Data>().user.id);
     sended = sendedPractices.isEmpty ? false : true;
     if (sended) {
       _editingController.text = sendedPractices[0].text;
@@ -314,6 +313,10 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: EditableText(
+                                  onTapOutside: (event) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                   controller: _editingController,
                                   readOnly: true,
                                   focusNode: FocusNode(),
@@ -334,7 +337,8 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
                                       children: [
                                         Container(
                                           alignment: Alignment.centerLeft,
-                                          child: const Text("Ваши прикрепленные файлы:"),
+                                          child: const Text(
+                                              "Ваши прикрепленные файлы:"),
                                         ),
                                         Column(
                                             crossAxisAlignment:
@@ -388,6 +392,10 @@ class _PracticeLessonBlockState extends State<PracticeLessonBlock> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: EditableText(
+                                  onTapOutside: (event) {
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  },
                                   controller: _editingController,
                                   focusNode: FocusNode(),
                                   expands: true,
@@ -529,7 +537,7 @@ class PDFfileTile extends StatelessWidget {
     //   forceWebView: false,
     // );
 
-    await launchUrl(Uri.parse(url), mode:LaunchMode.platformDefault);
+    await launchUrl(Uri.parse(url), mode: LaunchMode.platformDefault);
 
     // Открываем файл после его скачивания
     // В зависимости от типа файла и настроек устройства, можно использовать различные плагины

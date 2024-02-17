@@ -42,10 +42,11 @@ dependencies:
   pdf: ^3.10.7
   file_picker: ^6.1.1
   printing: ^5.11.1
-  syncfusion_flutter_pdfviewer: ^23.2.7
+  syncfusion_flutter_pdfviewer: ^24.2.6
   url_launcher: ^6.2.2
   path_provider: ^2.1.1
   cached_network_image: ^3.3.1
+  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +59,13 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
 
+flutter_launcher_icons:
+  image_path: "assets/Icon.png"
+  ios: true
+  image_path_ios: "assets/IosIcon.png"
+  android: true
+  adaptive_android_background: "#FFFFFF"
+  adaptive_android_foreground: "assets/Icon.png"
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
