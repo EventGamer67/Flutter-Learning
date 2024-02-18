@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -39,22 +40,18 @@ class _SupportSreenState extends State<SupportSreen> {
   final chatBloc bloc = chatBloc();
   bool sending = false;
 
-  void loadMessages() async {
+  late final StreamSubscription<List<Map<String, dynamic>>> messageStream;
+
+  loadMessages() async {
     messagesNew = await Api().loadMessages(GetIt.I.get<Data>().user.id);
     messagesNew.sort((a, b) {
       return a.id > b.id ? -1 : 1;
     });
     GetIt.I.get<Data>().users = await Api().loadUsers();
     bloc.add(ChatLoaded());
-  }
-
-  @override
-  void initState() {
-    loadMessages();
-    super.initState();
 
     final Supabase sup = GetIt.I.get<Supabase>();
-    sup.client
+    messageStream = sup.client
         .from("Messages")
         .stream(primaryKey: ['id']).listen((List<Map<String, dynamic>> data) {
       Message message = Message(
@@ -64,9 +61,24 @@ class _SupportSreenState extends State<SupportSreen> {
           takerID: data.last['takerID'],
           created_at: DateTime.parse(data.last['created_at']));
       setState(() {
-        messagesNew.insert(0, message);
+        if (messagesNew.first.id != message.id) {
+          messagesNew.insert(0, message);
+        }
       });
     });
+    messageStream.resume();
+  }
+
+  @override
+  void initState() {
+    loadMessages();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    messageStream.cancel();
   }
 
   void _handleSubmittedMessage(String text) async {
@@ -161,22 +173,25 @@ class _SupportSreenState extends State<SupportSreen> {
                               ),
                             ),
                     ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12.0),
-                  border: Border.all(
-                      width: 2,
-                      color: (isMe ? Colors.blue[100] : Colors.grey[200])!
-                          .withOpacity(1)),
-                  color: isMe ? Colors.blue[100] : Colors.grey[200],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    message.message,
-                    textAlign: isMe ? TextAlign.end : TextAlign.start,
-                    style: const TextStyle(
-                        fontSize: 16.0, fontFamily: 'Comic Sans'),
+              LimitedBox(
+                maxWidth: 0.8 * MediaQuery.of(context).size.width,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    border: Border.all(
+                        width: 2,
+                        color: (isMe ? Colors.blue[100] : Colors.grey[200])!
+                            .withOpacity(1)),
+                    color: isMe ? Colors.blue[100] : Colors.grey[200],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      message.message,
+                      textAlign: isMe ? TextAlign.end : TextAlign.start,
+                      style: const TextStyle(
+                          fontSize: 16.0, fontFamily: 'Comic Sans'),
+                    ),
                   ),
                 ),
               ),
