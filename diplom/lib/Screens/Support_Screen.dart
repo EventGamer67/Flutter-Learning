@@ -1,5 +1,8 @@
 // ignore_for_file: file_names
 
+import 'dart:math';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Models/DatabaseClasses/message.dart';
 import 'package:diplom/Services/Api.dart';
 import 'package:diplom/Services/Data.dart';
@@ -34,12 +37,14 @@ class _SupportSreenState extends State<SupportSreen> {
       TextEditingController(); // Controller for text input
 
   final chatBloc bloc = chatBloc();
+  bool sending = false;
 
   void loadMessages() async {
     messagesNew = await Api().loadMessages(GetIt.I.get<Data>().user.id);
-    messagesNew.sort((a,b) { return a.id > b.id ? -1 : 1; } );
+    messagesNew.sort((a, b) {
+      return a.id > b.id ? -1 : 1;
+    });
     GetIt.I.get<Data>().users = await Api().loadUsers();
-    GetIt.I.get<Talker>().good(GetIt.I.get<Data>().users);
     bloc.add(ChatLoaded());
   }
 
@@ -47,36 +52,49 @@ class _SupportSreenState extends State<SupportSreen> {
   void initState() {
     loadMessages();
     super.initState();
+
+    final Supabase sup = GetIt.I.get<Supabase>();
+    sup.client
+        .from("Messages")
+        .stream(primaryKey: ['id']).listen((List<Map<String, dynamic>> data) {
+      Message message = Message(
+          id: data.last['id'],
+          message: data.last['message'],
+          senderID: data.last['senderID'],
+          takerID: data.last['takerID'],
+          created_at: DateTime.parse(data.last['created_at']));
+      setState(() {
+        messagesNew.insert(0, message);
+      });
+    });
   }
 
   void _handleSubmittedMessage(String text) async {
-    final data = GetIt.I.get<Data>();
-    try {
-      final SupabaseClient sup = GetIt.I.get<Supabase>().client;
-      final result = await sup.from('Messages').insert({
-        'message': text,
-        'senderID': '${data.user.id}',
-        'takerID': '${-1}',
-        'created_at': '${DateTime.now()}'
-      });
-      GetIt.I.get<Talker>().good('send $result');
-    } catch (err) {
-      GetIt.I.get<Talker>().critical('Failed send $err');
-      return;
+    if (!sending) {
+      if (_textController.text != "") {
+        final data = GetIt.I.get<Data>();
+        try {
+          final SupabaseClient sup = GetIt.I.get<Supabase>().client;
+          setState(() {
+            sending = true;
+          });
+          final result = await sup.from('Messages').insert({
+            'message': text,
+            'senderID': '${data.user.id}',
+            'takerID': '${-1}',
+            'created_at': '${DateTime.now()}'
+          });
+          _textController.clear();
+          GetIt.I.get<Talker>().good('send $result');
+          sending = false;
+        } catch (err) {
+          GetIt.I.get<Talker>().critical('Failed send $err');
+          sending = false;
+          return;
+        }
+        setState(() {});
+      }
     }
-
-    _textController.clear();
-    Message message = Message(
-      message: text,
-      id: -1,
-      senderID: 1,
-      takerID: -1,
-      created_at: DateTime.now(),
-    );
-
-    setState(() {
-      messagesNew.insert(0, message); // Inserting the message  in the list
-    });
   }
 
   Widget _buildChatList() {
@@ -85,46 +103,100 @@ class _SupportSreenState extends State<SupportSreen> {
         reverse: true,
         itemCount: messagesNew.length,
         itemBuilder: (BuildContext context, int index) {
-          return _buildMessage(messagesNew[index]);
+          return _buildMessage(
+              messagesNew[index],
+              messagesNew[min(index + 1, messagesNew.length - 1)],
+              messagesNew[max(index - 1, 0)]);
         },
       ),
     );
   }
 
-  Widget _buildMessage(Message message) {
-    final int myID = GetIt.I.get<Data>().user.id; 
+  Widget _buildMessage(Message message, Message previous, Message next) {
+    final int myID = GetIt.I.get<Data>().user.id;
+    bool isMe = message.senderID == myID ? true : false;
+
+    bool lastSenderIsCurrent = previous.senderID == message.senderID;
+    if (previous.id == message.id) {
+      lastSenderIsCurrent = false;
+    }
+
+    bool nextSenderIsCurrent = next.senderID == message.senderID;
+    if (next.id == message.id) {
+      nextSenderIsCurrent = false;
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-      alignment: message.senderID == myID ? Alignment.topRight : Alignment.topLeft,
+      alignment: isMe ? Alignment.topRight : Alignment.topLeft,
       child: Column(
         crossAxisAlignment:
-            message.senderID == myID ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
-          Text(
-            message.senderID == myID ? "Вы" : GetIt.I.get<Data>().getUserName(message.senderID),
-            style: const TextStyle(fontFamily: 'Comic Sans'),
-          ),
-          Container(
-            width: MediaQuery.of(context).size.width *
-                0.7, // Примерная ширина сообщения
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12.0),
-              border: Border.all(
-                  width: 2,
-                  color:
-                      (message.senderID == 1 ? Colors.blue[100] : Colors.grey[200])!
+          lastSenderIsCurrent
+              ? SizedBox()
+              : Text(
+                  isMe
+                      ? "Вы"
+                      : GetIt.I.get<Data>().getUserName(message.senderID),
+                  style: const TextStyle(fontFamily: 'Comic Sans'),
+                ),
+          Row(
+            mainAxisAlignment:
+                isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+            children: [
+              isMe
+                  ? SizedBox()
+                  : Container(
+                      padding: EdgeInsets.only(right: 5),
+                      child: nextSenderIsCurrent
+                          ? SizedBox()
+                          : CircleAvatar(
+                              radius: 20,
+                              foregroundImage: CachedNetworkImageProvider(
+                                GetIt.I
+                                    .get<Data>()
+                                    .getUserById(message.senderID)
+                                    .avatarURL,
+                              ),
+                            ),
+                    ),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12.0),
+                  border: Border.all(
+                      width: 2,
+                      color: (isMe ? Colors.blue[100] : Colors.grey[200])!
                           .withOpacity(1)),
-              color: message.senderID == 1 ? Colors.blue[100] : Colors.grey[200],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                message.message,
-                textAlign: message.senderID == 1 ? TextAlign.end : TextAlign.start,
-                style:
-                    const TextStyle(fontSize: 16.0, fontFamily: 'Comic Sans'),
+                  color: isMe ? Colors.blue[100] : Colors.grey[200],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    message.message,
+                    textAlign: isMe ? TextAlign.end : TextAlign.start,
+                    style: const TextStyle(
+                        fontSize: 16.0, fontFamily: 'Comic Sans'),
+                  ),
+                ),
               ),
-            ),
+              !isMe
+                  ? SizedBox()
+                  : Container(
+                      padding: EdgeInsets.only(left: 5),
+                      child: nextSenderIsCurrent
+                          ? SizedBox()
+                          : CircleAvatar(
+                              radius: 20,
+                              foregroundImage: CachedNetworkImageProvider(
+                                GetIt.I
+                                    .get<Data>()
+                                    .getUserById(message.senderID)
+                                    .avatarURL,
+                              ),
+                            ),
+                    ),
+            ],
           ),
         ],
       ),
@@ -184,27 +256,35 @@ class _SupportSreenState extends State<SupportSreen> {
   }
 
   Widget _buildTextComposer() {
-    return IconTheme(
-      data: IconThemeData(color: Theme.of(context).canvasColor),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: <Widget>[
-            Flexible(
-              child: TextField(
-                controller: _textController,
-                onSubmitted: _handleSubmittedMessage,
-                decoration: const InputDecoration.collapsed(
-                    hintText: 'Отправить сообщение',
-                    hintStyle: TextStyle(fontFamily: 'Comic Sans')),
-              ),
+    return Container(
+      height: 50,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Row(
+        children: <Widget>[
+          Flexible(
+            child: TextField(
+              onTapOutside: (event) {
+                FocusManager.instance.primaryFocus?.unfocus();
+              },
+              style: TextStyle(fontFamily: 'Comic Sans'),
+              controller: _textController,
+              onSubmitted: _handleSubmittedMessage,
+              decoration: const InputDecoration.collapsed(
+                  hintText: 'Отправить сообщение',
+                  hintStyle: TextStyle(fontFamily: 'Comic Sans')),
             ),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: () => _handleSubmittedMessage(_textController.text),
-            ),
-          ],
-        ),
+          ),
+          sending
+              ? CircularProgressIndicator()
+              : IconButton(
+                  icon: Icon(
+                    Icons.send,
+                    color: Colors.blue.shade400,
+                  ),
+                  onPressed: () =>
+                      _handleSubmittedMessage(_textController.text),
+                ),
+        ],
       ),
     );
   }

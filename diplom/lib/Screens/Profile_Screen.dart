@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, file_names, non_constant_identifier_names
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Screens/Authorization_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _emailController = TextEditingController(text: email);
     avatarURL = GetIt.I.get<Data>().user.avatarURL;
     final registerDatetime = GetIt.I.get<Data>().user.registerDate;
-    createDate = "${registerDatetime.year}.${registerDatetime.month}.${registerDatetime.day} ${registerDatetime.hour}:${registerDatetime.minute > 9 ? registerDatetime.minute : "0${registerDatetime.minute}"}";
+    createDate =
+        "${registerDatetime.year}.${registerDatetime.month}.${registerDatetime.day} ${registerDatetime.hour}:${registerDatetime.minute > 9 ? registerDatetime.minute : "0${registerDatetime.minute}"}";
   }
 
   @override
@@ -57,9 +59,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
-              radius: 100,
-              foregroundImage: NetworkImage(avatarURL),
-            ),
+                radius: 100,
+                foregroundImage: CachedNetworkImageProvider(avatarURL)),
             SizedBox(
               height: 50,
               child: Center(
@@ -81,6 +82,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 10,
                   ),
                   TextField(
+                    enabled: false,
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                     style: TextStyle(fontFamily: 'Comic Sans'),
                     controller: _FIOController,
                     decoration: InputDecoration(
@@ -104,7 +109,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 10,
                   ),
                   TextField(
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                     controller: _emailController,
+                    enabled: false,
                     style: TextStyle(fontFamily: 'Comic Sans'),
                     decoration: InputDecoration(
                         icon: Icon(Icons.email_outlined),
@@ -127,6 +136,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 10,
                   ),
                   TextField(
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                     decoration: InputDecoration(
                         enabled: false,
                         icon: Icon(Icons.calendar_month_outlined),
@@ -150,6 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 10,
                   ),
                   TextField(
+                    onTapOutside: (event) {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                    },
                     decoration: InputDecoration(
                         enabled: false,
                         icon: Icon(Icons.privacy_tip_outlined),

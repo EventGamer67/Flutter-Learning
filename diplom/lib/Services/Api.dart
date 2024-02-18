@@ -19,17 +19,21 @@ class Api {
   Future<MyUser?> login(
       {required String email, required String password}) async {
     final sup = GetIt.I.get<Supabase>();
-    final requestUser = await sup.client
-        .from('Users')
-        .select('*')
-        .eq('email', email)
-        .eq('password', password);
-    if (requestUser.toString() != '[]') {
-      final Map<String, dynamic> user =
-          (requestUser as List<dynamic>)[0] as Map<String, dynamic>;
-      MyUser da = MyUser.fromMap(user);
-      return da;
-    } else {
+    try {
+      final requestUser = await sup.client
+          .from('Users')
+          .select('*')
+          .eq('email', email)
+          .eq('password', password);
+      if (requestUser.toString() != '[]') {
+        final Map<String, dynamic> user =
+            (requestUser as List<dynamic>)[0] as Map<String, dynamic>;
+        MyUser da = MyUser.fromMap(user);
+        return da;
+      } else {
+        return null;
+      }
+    } catch (error) {
       return null;
     }
   }
@@ -67,24 +71,20 @@ class Api {
     }
   }
 
-  Future<List<(int,String)>> loadUsers() async{
+  Future<List<OtherUser>> loadUsers() async {
     final client = GetIt.I.get<Supabase>().client;
-     final result = await client
-        .from('Users')
-        .select('id,name');
+    final result = await client.from('Users').select('id,avatarURL,registerDate,RoleID,name');
     final raw = result as List<dynamic>;
-    List<(int,String)> usrs = [];
-    for(var us in raw){
-      usrs.add((us['id'],us['name']));
+    List<OtherUser> usrs = [];
+    for (var us in raw) {
+      usrs.add(OtherUser.fromMap(us));
     }
     return usrs;
   }
 
   Future<List<Message>> loadMessages(int MeID) async {
     final client = GetIt.I.get<Supabase>().client;
-    final result = await client
-        .from('Messages')
-        .select('*');
+    final result = await client.from('Messages').select('*');
     // final result = await client
     //     .from('Messages')
     //     .select('*')
@@ -114,8 +114,11 @@ class Api {
 
   Future<List<UserPractice>> loadUserPractices(int lessonID, int userID) async {
     final client = GetIt.I.get<Supabase>().client;
-    final result =
-        await client.from('UserPractices').select('*').eq('lesson', lessonID).eq('user', userID);
+    final result = await client
+        .from('UserPractices')
+        .select('*')
+        .eq('lesson', lessonID)
+        .eq('user', userID);
     final raw = result as List<dynamic>;
     List<UserPractice> res = [];
     for (var mes in raw) {
@@ -256,7 +259,8 @@ class Api {
     final res = await client.from('ClosedCourses').select('closedcourse');
     GetIt.I.get<Talker>().debug(res);
     try {
-      return List<int>.from((res as List<dynamic>).map((e) => e['closedcourse'] as int));
+      return List<int>.from(
+          (res as List<dynamic>).map((e) => e['closedcourse'] as int));
     } catch (err) {
       return [];
     }

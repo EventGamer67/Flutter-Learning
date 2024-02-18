@@ -60,7 +60,6 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    GetIt.I.get<Talker>().debug(widget.course.progress);
     return Scaffold(
       body: Container(
         child: Stack(children: [
@@ -71,26 +70,25 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                 snap: true,
                 expandedHeight: 300.0,
                 flexibleSpace: FlexibleSpaceBar(
-                  title: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Container(
-                        alignment: Alignment.bottomRight,
-                        child: Text(
-                          widget.course.name,
-                          textAlign: TextAlign.end,
-                          style: const TextStyle(
-                            fontFamily: 'Comic Sans',
-                            shadows: [
-                              Shadow(color: Colors.black, blurRadius: 40)
-                            ],
+                    title: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          alignment: Alignment.bottomRight,
+                          child: Text(
+                            widget.course.name,
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(
+                              fontFamily: 'Comic Sans',
+                              shadows: [
+                                Shadow(color: Colors.black, blurRadius: 40)
+                              ],
+                            ),
                           ),
-                        ),
-                      )),
-                  background: Image.network(
-                    widget.course.photo,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                        )),
+                    background: Image(
+                      image: NetworkImage(widget.course.photo),
+                      fit: BoxFit.cover,
+                    )),
               ),
               SliverToBoxAdapter(
                 child: Container(
@@ -155,9 +153,11 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                           Column(
                               children: modules.map((e) {
                             final moduleLessons = lessons
-                                .where((element) => element.moduleID == e.id).toList();
-                                
-                            moduleLessons.sort(((a, b) => a.name.compareTo(b.name)));
+                                .where((element) => element.moduleID == e.id)
+                                .toList();
+
+                            moduleLessons
+                                .sort(((a, b) => a.name.compareTo(b.name)));
 
                             return ExpansionTile(
                               title: Text(
@@ -170,7 +170,7 @@ class _CourseLearnScreenState extends State<CourseLearnScreen> {
                                       onTap: () async {
                                         final lessonStateTypes =
                                             e.getLessonState(lessons);
-                                            GetIt.I.get<Talker>().good(e.name);
+                                        GetIt.I.get<Talker>().good(e.name);
                                         switch (lessonStateTypes) {
                                           case (LessonStateTypes.Current):
                                             await Navigator.push(context,

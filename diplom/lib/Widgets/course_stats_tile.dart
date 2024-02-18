@@ -2,7 +2,6 @@ import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Services/Data.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:talker_flutter/talker_flutter.dart';
 
 class CourseStateTile extends StatelessWidget {
   final Course course;
@@ -15,10 +14,8 @@ class CourseStateTile extends StatelessWidget {
     final dat = GetIt.I.get<Data>();
     final lessontypes = dat.lessonTypes.where((element) =>
         lessons.map((e) => e.type).toSet().toList().contains(element.id));
-    GetIt.I.get<Talker>().debug(dat.lessonTypes);
 
-    return SizedBox(
-      height: 148,
+    return IntrinsicHeight(
       child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Padding(
@@ -56,44 +53,46 @@ class StatTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1 / 1,
+    return Container(
+      width: 140,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Stack(children: [
-            FittedBox(
-              child: SizedBox(
-                width: 80,
-                height: 80,
-                child: Center(
-                  child: Icon(
-                    lessonType.getLessonTypeIcon(),
-                    size: 32,
-                    color: const Color.fromARGB(255, 52, 152, 219),
+          Container(
+            child: Stack(children: [
+              FittedBox(
+                child: SizedBox(
+                  width: 80,
+                  height: 80,
+                  child: Center(
+                    child: Icon(
+                      lessonType.getLessonTypeIcon(),
+                      size: 32,
+                      color: const Color.fromARGB(255, 52, 152, 219),
+                    ),
                   ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 80,
-              height: 80,
-              child: CircularProgressIndicator(
-                strokeWidth: 5,
-                value: completed / count,
-                color: const Color.fromARGB(255, 52, 152, 219),
-                backgroundColor: Colors.black.withOpacity(0.3),
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: CircularProgressIndicator(
+                  strokeWidth: 5,
+                  value: completed / count,
+                  color: const Color.fromARGB(255, 52, 152, 219),
+                  backgroundColor: Colors.black.withOpacity(0.3),
+                ),
               ),
-            ),
-          ]),
-          FittedBox(
-            child: Text(
-              lessonType.name,
-              style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
-            ),
+            ]),
+          ),
+          Text(
+            lessonType.name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
           ),
           Text(
             "$completed/$count",
+            textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Comic Sans', fontSize: 18),
           )
         ],

@@ -1,5 +1,6 @@
   // ignore_for_file: prefer_const_constructors, camel_case_types, file_names
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:diplom/Models/DatabaseClasses/course.dart';
 import 'package:diplom/Screens/Course_Sreen.dart';
 import 'package:diplom/Services/Data.dart';
@@ -94,7 +95,7 @@ class AllCoursesTile extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   image: DecorationImage(
-                      fit: BoxFit.cover, image: NetworkImage(imageURL))),
+                      fit: BoxFit.cover, image: CachedNetworkImageProvider(imageURL))),
               child: Padding(
                 padding: EdgeInsets.all(20),
                 child: AspectRatio(
